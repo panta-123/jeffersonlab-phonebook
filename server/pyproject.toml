@@ -4,5 +4,72 @@ version = "0.1.0"
 description = "Jefferson Lab phonebook server backend"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "asyncpg>=0.30.0",
+    "authlib>=1.6.1",
+    "fastapi>=0.116.1",
+    "httpx>=0.28.1",
+    "pydantic-settings>=2.10.1",
+    "pydantic>=2.11.7",
+    "sqlalchemy>=2.0.41",
+    "uvicorn>=0.35.0",
+]
 
+[dependency-groups]
+dev = [
+    "hatchling>=1.27.0",
+    "mypy>=1.17.0",
+    "ruff>=0.12.4",
+    "types-authlib>=1.6.0.20250711",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.mypy]
+# Minimal MyPy configuration: enable strict mode, exclude common virtual environments
+strict = true
+exclude = [
+    "venv",
+    ".venv",
+    "env",
+    ".env",
+    "alembic",
+    ".*models\\.py$",
+] # Exclude your alembic folder as well
+
+[tool.ruff]
+# Minimal Ruff configuration: target Python version, exclude common folders
+target-version = "py310" # Matches your project's requires-python
+line-length = 88 # Black's default line length, a good standard
+exclude = [
+    ".git",
+    "__pycache__",
+    "venv",
+    ".venv",
+    "env",
+    ".env",
+    "alembic",     # Exclude your alembic folder
+    "dist",
+    "build",
+]
+
+[tool.ruff.lint]
+# Minimal linting rules, focusing on correctness and common style issues
+select = [
+    "E", # pycodestyle errors (e.g., syntax errors, indentation)
+    "F", # pyflakes (e.g., unused imports, undefined names)
+    "I", # isort (import sorting)
+    "B", # flake8-bugbear (common logical bugs, e.g., mutable default args)
+]
+ignore = [
+    "E501", # Line too long (handled by 'line-length' and Ruff's formatter)
+    "B006", # Do not use mutable data structures for argument defaults.
+    "B008", # Do not perform function calls in argument defaults.
+]
+
+[tool.ruff.format]
+# Enable Ruff's formatter for automatic code formatting
+docstring-code-format = true
+quote-style = "double"
