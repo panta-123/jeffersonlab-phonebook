@@ -10,3 +10,4 @@ htmlcov
 *.pyo
 .vscode
 .env
+nginx/ssl/*

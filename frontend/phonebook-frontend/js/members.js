@@ -3,7 +3,7 @@ let allMembers = [];
 // Load members from API
 async function loadMembers() {
     try {
-        const response = await fetch('/api/members', {
+        const response = await fetch(`${API_BASE_URL}/members`, {
             credentials: 'include'
         });
 

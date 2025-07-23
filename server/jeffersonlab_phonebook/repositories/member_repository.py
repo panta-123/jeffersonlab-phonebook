@@ -1,3 +1,5 @@
+from datetime import date
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
@@ -14,11 +16,21 @@ class MemberRepository:
         )
 
     def create(self, userinfo: dict, institution_id: int) -> Member:
+        try:
+            given_name = userinfo["given_name"]
+            family_name = userinfo["family_name"]
+            email = userinfo["email"]
+        except KeyError as e:
+            # You should handle this exception, maybe log it or raise a more specific error
+            raise ValueError(f"Missing required userinfo field: {e}") from e
+
         member = Member(
-            first_name=userinfo.get("given_name"),
-            last_name=userinfo.get("family_name"),
-            orcid=userinfo.get("orcid"),
+            first_name=given_name,
+            last_name=family_name,
+            email=email,
+            orcid=userinfo.get("eduPersonOrcid"),  # This is fine as it's nullable
             institution_id=institution_id,
+            date_joined=date.today(), # Set the required date_joined field
             experimental_data={
                 "sub": userinfo.get("sub"),
                 "idp_name": userinfo.get("idp_name"),

@@ -5,8 +5,10 @@ from sqlalchemy import Date, Float, ForeignKey, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
+class Base(DeclarativeBase):
+    pass
 
-class Institution(DeclarativeBase):
+class Institution(Base):
     """Represents an academic or research institution."""
 
     __tablename__ = "institutions"
@@ -31,7 +33,7 @@ class Institution(DeclarativeBase):
     )
 
 
-class Member(DeclarativeBase):
+class Member(Base):
     """Represents a person in the collaboration."""
 
     __tablename__ = "members"
@@ -62,7 +64,7 @@ class Member(DeclarativeBase):
     )
 
 
-class MemberInstitutionHistory(DeclarativeBase):
+class MemberInstitutionHistory(Base):
     """Tracks the history of a member's association with institutions."""
 
     __tablename__ = "member_institution_history"
@@ -77,7 +79,7 @@ class MemberInstitutionHistory(DeclarativeBase):
     institution = relationship("Institution")
 
 
-class Group(DeclarativeBase):
+class Group(Base):
     """Represents a working group that includes members."""
 
     __tablename__ = "groups"
@@ -90,7 +92,7 @@ class Group(DeclarativeBase):
     )
 
 
-class GroupMember(DeclarativeBase):
+class GroupMember(Base):
     """Associative table linking members to groups."""
 
     __tablename__ = "group_members"
@@ -103,7 +105,7 @@ class GroupMember(DeclarativeBase):
     member: Mapped["Member"] = relationship(back_populates="group_memberships")
 
 
-class Event(DeclarativeBase):
+class Event(Base):
     """Represents an event with a name, date, and optional location."""
 
     __tablename__ = "events"

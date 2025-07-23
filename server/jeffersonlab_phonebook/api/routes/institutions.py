@@ -11,9 +11,10 @@ from jeffersonlab_phonebook.schemas.members import (
     InstitutionResponse,
     InstitutionUpdate,
 )
+from jeffersonlab_phonebook.db.session import get_db
 
 # Your security dependency that provides an active Member ORM object
-from ..deps import get_current_user, get_db  # Use this one!
+from ..deps import get_current_user  # Use this one!
 
 router = APIRouter(prefix="/institutions", tags=["institutions"])
 

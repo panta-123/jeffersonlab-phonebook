@@ -1,10 +1,20 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.routing import APIRoute
 from starlette.middleware.cors import CORSMiddleware
 
 from jeffersonlab_phonebook.api.main import api_router
 from jeffersonlab_phonebook.config.settings import settings
+from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
+class ForceHTTPSRedirectMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        if request.headers.get("x-forwarded-proto") == "https":
+            request.scope["scheme"] = "https"
+        response = await call_next(request)
+        return response
 
 def custom_generate_unique_id(route: APIRoute) -> str:
     """_summary_
@@ -30,5 +40,12 @@ if settings.all_cors_origins:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
+
+# --- ADDED THIS to fix the HTTPS/HTTP Mixed Content Error ---
+app.add_middleware(ForceHTTPSRedirectMiddleware)
+# --- And this to prevent Host header attacks ---
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=["vulcan.jlab.org"])
 
 app.include_router(api_router, prefix=settings.API_V1_STR)

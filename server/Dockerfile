@@ -58,4 +58,4 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # It's located in 'server/entrypoint.sh' in your build context.
 # It will be copied to '/jeffersonlab_phonebook/entrypoint.sh' inside the container.
 #COPY entrypoint.sh ./
-CMD ["uvicorn", "jeffersonlab_phonebook.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "jeffersonlab_phonebook.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]

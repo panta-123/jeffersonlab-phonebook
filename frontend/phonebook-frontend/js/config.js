@@ -1,4 +1,8 @@
-// Simple version that works directly in browsers
-const API_BASE_URL = window.location.hostname === 'localhost'
-    ? 'http://localhost:8000/api/v1'
-    : 'https://api.yourdomain.com';
+// js/config.js
+
+// The base URL for all API requests.
+// This is the path that Nginx will use to proxy to the backend.
+const API_BASE_URL = '/api/v1';
+
+// Optional: Test mode for development.
+const TEST_MODE = false;

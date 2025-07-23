@@ -6,15 +6,6 @@ from fastapi import HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 
 from jeffersonlab_phonebook.config.settings import settings
-from jeffersonlab_phonebook.db.session import get_db as get_db_session
-
-
-def get_db():
-    """_summary_
-
-    :return _type_: _description_
-    """
-    return get_db_session
 
 
 def get_oauth() -> OAuth:
@@ -50,6 +41,7 @@ def create_jwt_and_cookie(member, userinfo, redirect_url="/"):
         "sub": userinfo["sub"],
         "email": member.email,
         "name": f"{member.first_name} {member.last_name}",
+        "isadmin": True,
         "exp": datetime.now(timezone.utc)
         + timedelta(seconds=settings.JWT_EXP_DELTA_SECONDS),
     }

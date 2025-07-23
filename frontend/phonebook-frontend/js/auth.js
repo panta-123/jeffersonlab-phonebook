@@ -1,5 +1,8 @@
-// Remove the import and use the global variable
-const TEST_MODE = true;
+// js/auth.js
+
+// Import the API_BASE_URL from your config file if you're using modules,
+// or ensure config.js is loaded before auth.js in your HTML.
+// (e.g., <script src="js/config.js"></script> <script src="js/auth.js"></script>)
 
 async function checkAuth() {
     if (TEST_MODE) {
@@ -8,6 +11,7 @@ async function checkAuth() {
     }
 
     try {
+        // Construct the full API URL using the base URL
         const response = await fetch(`${API_BASE_URL}/user/check-auth`, {
             credentials: 'include'
         });
@@ -23,4 +27,29 @@ async function checkAuth() {
     }
 }
 
-// ... rest of your auth.js functions
+
+async function logout() {
+    if (TEST_MODE) {
+        // In test mode, we might just simulate a logout and redirect
+        console.log("Simulating logout in TEST_MODE");
+        window.location.href = '/login.html';
+        return;
+    }
+    try {
+        // Send a request to your server's logout endpoint
+        const response = await fetch(`${API_BASE_URL}/user/logout`, {
+            method: 'POST', // or GET, depending on your API
+            credentials: 'include',
+        });
+
+        if (response.ok) {
+            // If logout was successful on the server, redirect the user
+            console.log("Logout successful");
+            window.location.href = '/login.html'; // Or wherever your login page is
+        } else {
+            console.error('Logout failed on the server.');
+        }
+    } catch (error) {
+        console.error('Logout failed:', error);
+    }
+}

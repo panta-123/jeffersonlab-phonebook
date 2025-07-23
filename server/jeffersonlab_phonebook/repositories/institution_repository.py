@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
 
 from jeffersonlab_phonebook.db.models import Institution
@@ -19,6 +19,19 @@ class InstitutionRepository:
         Retrieves a single institution by its ID.
         """
         return self.db.get(Institution, institution_id)
+
+    def get_by_name(self, name: str) -> Optional[Institution]:
+        """
+        Retrieves a single institution by its full_name or short_name.
+        """
+        return self.db.scalar(
+            select(Institution).where(
+                or_(
+                    Institution.full_name == name,
+                    Institution.short_name == name,
+                )
+            )
+        )
 
     def get_all(self, skip: int = 0, limit: int = 100) -> List[Institution]:
         """

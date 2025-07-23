@@ -3,7 +3,7 @@ let allInstitutions = [];
 // Load institutions from API
 async function loadInstitutions() {
     try {
-        const response = await fetch('/api/institutions', {
+        const response = await fetch(`${API_BASE_URL}/institutions`, {
             credentials: 'include'
         });
 
@@ -160,7 +160,7 @@ document.getElementById('editInstitutionForm').addEventListener('submit', async 
     };
 
     try {
-        const response = await fetch(`/api/institutions/${institutionId}`, {
+        const response = await fetch(`${API_BASE_URL}/${institutionId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

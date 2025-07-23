@@ -2,6 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from jeffersonlab_phonebook.config.settings import settings
+from jeffersonlab_phonebook.db.models import Base 
+
 
 SQLALCHEMY_DATABASE_URL = str(settings.SQLALCHEMY_DATABASE_URI)
 
@@ -13,6 +15,10 @@ SQLALCHEMY_DATABASE_URL = str(settings.SQLALCHEMY_DATABASE_URI)
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL  # , connect_args={"check_same_thread": False} # Needed for SQLite
 )
+
+# create table if not exits
+Base.metadata.create_all(bind=engine)
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

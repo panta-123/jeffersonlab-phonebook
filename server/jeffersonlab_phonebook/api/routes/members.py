@@ -5,9 +5,10 @@ from sqlalchemy.orm import Session  # For type hinting db session
 
 from jeffersonlab_phonebook.repositories.member_repository import MemberRepository
 from jeffersonlab_phonebook.schemas.members import MemberResponse
+from jeffersonlab_phonebook.db.session import get_db
 
 # Your security dependency that provides an active Member ORM object
-from ..deps import get_current_user, get_db  # Use this one!
+from ..deps import get_current_user  # Use this one!
 
 router = APIRouter(prefix="/members", tags=["members"])
 
