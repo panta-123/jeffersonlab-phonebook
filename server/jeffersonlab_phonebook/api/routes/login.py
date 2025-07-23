@@ -1,6 +1,6 @@
-from authlib.integrations.starlette_client import OAuth
-from fastapi import APIRouter, Depends, Request
-from fastapi.responses import RedirectResponse
+"""_summary_"""
+
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 
 from jeffersonlab_phonebook.repositories.institution_repository import (
@@ -8,25 +8,13 @@ from jeffersonlab_phonebook.repositories.institution_repository import (
 )
 from jeffersonlab_phonebook.repositories.member_repository import MemberRepository
 
-from ...config.settings import settings
-from ..deps import get_db
+from ..deps import create_jwt_and_cookie, get_db, get_oauth
 
 router = APIRouter(prefix="/user", tags=["user"])
 
-# 1. Initialize Authlib OAuth client
-oauth = OAuth()
-oauth.register(
-    name="cilogon",
-    client_id=settings.CILOGON_CLIENT_ID,
-    client_secret=settings.CILOGON_CLIENT_SECRET,
-    server_metadata_url=settings.CILOGON_DISCOVERY_URL,
-    client_kwargs={"scope": "openid email profile org.cilogon.userinfo"},
-)
 
-
-# 2. Create the login route to redirect the user to CILogon
 @router.get("/login")
-async def login(request: Request):
+async def login(request: Request, oauth=Depends(get_oauth)):
     """_summary_
 
     :param Request request: _description_
@@ -36,20 +24,32 @@ async def login(request: Request):
     return await oauth.cilogon.authorize_redirect(request, redirect_uri)
 
 
-# 3. Create the callback route to handle the return from CILogon
 @router.get("/callback")
-async def auth(request: Request, db: Session = Depends(get_db)):
+async def auth(
+    request: Request, db: Session = Depends(get_db), oauth=Depends(get_oauth)
+):
     """_summary_
 
     :param Request request: _description_
     :param Session db: _description_, defaults to Depends(get_db)
     :return _type_: _description_
     """
-    token = await oauth.cilogon.authorize_access_token(request)
-    userinfo = token.get("userinfo")
+    try:
+        token = await oauth.cilogon.authorize_access_token(request)
+        userinfo = token.get("userinfo")
+    except Exception as e:
+        # Log this error for debugging in production
+        print(f"OAuth authorization failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="OAuth authorization failed or user denied access.",
+        ) from e
 
     if not userinfo:
-        return {"error": "Could not fetch user info"}
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Could not fetch user info from OAuth provider.",
+        )
 
     member_repo = MemberRepository(db)
     institution_repo = InstitutionRepository(db)
@@ -66,11 +66,17 @@ async def auth(request: Request, db: Session = Depends(get_db)):
             )
 
         member = member_repo.create(userinfo, institution.id)
+    elif not member.is_active:
+        # If the member is inactive, you might want to handle this case
+        return {"error": "Member is inactive"}
 
-    # Here you would typically create a session for the user (e.g., a JWT)
-    # and return it. For simplicity, we return the member info.
-    # Note: You'll need to add session management middleware to your main app.
-    request.session["user"] = userinfo
+    return create_jwt_and_cookie(member, userinfo)
 
-    # Redirect user to the frontend or a logged-in page
-    return RedirectResponse(url="/")  # Or some other destination
+
+@router.post("/logout")
+async def logout(response: Response):
+    """Clears the access_token cookie to log the user out."""
+    response.delete_cookie(
+        key="access_token", httponly=True, secure=True, samesite="lax", path="/"
+    )
+    return {"message": "Logged out successfully"}

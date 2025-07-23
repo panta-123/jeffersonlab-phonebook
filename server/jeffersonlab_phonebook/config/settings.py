@@ -31,6 +31,13 @@ def parse_cors(v: Union[str, list[str]]) -> list[str] | str:
 
 
 class Settings(BaseSettings):
+    """_summary_
+
+    :param _type_ BaseSettings: _description_
+    :raises ValueError: _description_
+    :return _type_: _description_
+    """
+
     model_config = SettingsConfigDict(
         # Use top level .env file (one level above ./backend/)
         env_file="../.env",
@@ -136,6 +143,10 @@ class Settings(BaseSettings):
     CILOGON_CLIENT_ID: str
     CILOGON_CLIENT_SECRET: str
     CILOGON_DISCOVERY_URL: str = "https://cilogon.org/.well-known/openid-configuration"
+
+    JWT_SECRET: str = "your-secret-key"
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXP_DELTA_SECONDS: int = 3600
 
 
 settings = Settings()  # type: ignore

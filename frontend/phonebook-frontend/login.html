@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaboration Management - Login</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 5rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .mode-toggle {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .mode-toggle button {
+            background: none;
+            border: none;
+            color: #1976d2;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="/js/config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        // Check if we're in test mode
+        if (TEST_MODE) {
+            // Auto-redirect in test mode
+            window.location.href = '/';
+        } else {
+            // Show login UI in production mode
+            document.body.innerHTML = `
+                <div class="login-container">
+                    <h1>Collaboration Management</h1>
+                    <p>Please login to access the system</p>
+                    <button id="loginBtn" class="btn btn-primary">Login with CILogon</button>
+                    <div class="mode-toggle">
+                        Testing? <button id="toggleMode">Enable Test Mode</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('loginBtn').addEventListener('click', () => {
+                window.location.href = `${API_BASE_URL}/user/login`;
+            });
+
+            document.getElementById('toggleMode').addEventListener('click', () => {
+                // This would typically be set in a more persistent way
+                alert('To enable test mode, set TEST_MODE = true in auth.js');
+            });
+        }
+
+        // Check if already logged in (has cookie)
+        if (document.cookie.includes('access_token')) {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+
+</html>

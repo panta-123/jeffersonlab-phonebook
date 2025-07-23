@@ -1,9 +1,9 @@
-from app.core.config import settings
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from starlette.middleware.cors import CORSMiddleware
 
 from jeffersonlab_phonebook.api.main import api_router
+from jeffersonlab_phonebook.config.settings import settings
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:

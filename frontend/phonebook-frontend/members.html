@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members - Collaboration Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <header>
+        <h1>Collaboration Management</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/members.html" class="active">Members</a></li>
+                <li><a href="/institutions.html">Institutions</a></li>
+                <li><button id="logoutBtn" class="btn btn-secondary">Logout</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="content-header">
+            <h2>Members</h2>
+            <div class="actions">
+                <input type="text" id="searchInput" placeholder="Search members...">
+                <button id="exportBtn" class="btn btn-primary">Export CSV</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="membersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Institution</th>
+                        <th>Date Joined</th>
+                        <th>Status</th>
+                        <th class="admin-only">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="membersTableBody">
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Edit Modal -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Edit Member</h3>
+                <form id="editMemberForm">
+                    <input type="hidden" id="editMemberId">
+                    <div class="form-group">
+                        <label for="editFirstName">First Name</label>
+                        <input type="text" id="editFirstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editLastName">Last Name</label>
+                        <input type="text" id="editLastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email</label>
+                        <input type="email" id="editEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStatus">Status</label>
+                        <select id="editStatus">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/members.js"></script>
+    <script>
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            logout();
+        });
+
+        // Check authentication
+        checkAuth().then(isAuthenticated => {
+            if (!isAuthenticated) {
+                window.location.href = '/login.html';
+            } else {
+                loadMembers();
+            }
+        });
+    </script>
+</body>
+
+</html>

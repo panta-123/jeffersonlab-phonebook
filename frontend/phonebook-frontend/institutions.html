@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Institutions - Collaboration Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <header>
+        <h1>Collaboration Management</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/members.html">Members</a></li>
+                <li><a href="/institutions.html" class="active">Institutions</a></li>
+                <li><button id="logoutBtn" class="btn btn-secondary">Logout</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="content-header">
+            <h2>Institutions</h2>
+            <div class="actions">
+                <input type="text" id="searchInput" placeholder="Search institutions...">
+                <button id="exportBtn" class="btn btn-primary">Export CSV</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="institutionsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Short Name</th>
+                        <th>Country</th>
+                        <th>City</th>
+                        <th>Date Added</th>
+                        <th>Status</th>
+                        <th class="admin-only">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="institutionsTableBody">
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Edit Modal -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Edit Institution</h3>
+                <form id="editInstitutionForm">
+                    <input type="hidden" id="editInstitutionId">
+                    <div class="form-group">
+                        <label for="editFullName">Full Name</label>
+                        <input type="text" id="editFullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editShortName">Short Name</label>
+                        <input type="text" id="editShortName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCountry">Country</label>
+                        <input type="text" id="editCountry" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCity">City</label>
+                        <input type="text" id="editCity">
+                    </div>
+                    <div class="form-group">
+                        <label for="editStatus">Status</label>
+                        <select id="editStatus">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/institutions.js"></script>
+    <script>
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            logout();
+        });
+
+        // Check authentication
+        checkAuth().then(isAuthenticated => {
+            if (!isAuthenticated) {
+                window.location.href = '/login.html';
+            } else {
+                loadInstitutions();
+            }
+        });
+    </script>
+</body>
+
+</html>
