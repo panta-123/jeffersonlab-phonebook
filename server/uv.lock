@@ -246,6 +246,23 @@ wheels = [
 ]
 
 [[package]]
+name = "eralchemy"
+version = "1.5.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "sqlalchemy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/19/05/5f69930e83a02360d9ed16660bdd58d9d501bffabd43d7dbbe8c14269143/eralchemy-1.5.0.tar.gz", hash = "sha256:fa66a3cd324abd27ad8e65908d7af48d8198c0c185aeb22189cf40516de25941", size = 24847 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/10/ba/3cdc8433aa3d4afc95dd302c2a21611b90cc5b3ebbff5a4889bf6b2e3bdd/eralchemy-1.5.0-py3-none-any.whl", hash = "sha256:c87099aa1a4ac313df690cbe4eb642b596a635fc6b578f7963ce9570994dccc8", size = 19301 },
+]
+
+[package.optional-dependencies]
+graphviz = [
+    { name = "graphviz" },
+]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -269,6 +286,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/78/d7/6c8b3bfe33eeffa208183ec037fee0cce9f7f024089ab1c5d12ef04bd27c/fastapi-0.116.1.tar.gz", hash = "sha256:ed52cbf946abfd70c5a0dccb24673f0670deeb517a88b3544d03c2a6bf283143", size = 296485 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e5/47/d63c60f59a59467fda0f93f46335c9d18526d7071f025cb5b89d5353ea42/fastapi-0.116.1-py3-none-any.whl", hash = "sha256:c46ac7c312df840f0c9e220f7964bada936781bc4e2e6eb71f1c4d7553786565", size = 95631 },
+]
+
+[[package]]
+name = "graphviz"
+version = "0.21"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f8/b3/3ac91e9be6b761a4b30d66ff165e54439dcd48b83f4e20d644867215f6ca/graphviz-0.21.tar.gz", hash = "sha256:20743e7183be82aaaa8ad6c93f8893c923bd6658a04c32ee115edb3c8a835f78", size = 200434 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/91/4c/e0ce1ef95d4000ebc1c11801f9b944fa5910ecc15b5e351865763d8657f8/graphviz-0.21-py3-none-any.whl", hash = "sha256:54f33de9f4f911d7e84e4191749cac8cc5653f815b06738c54db9a15ab8b1e42", size = 47300 },
 ]
 
 [[package]]
@@ -400,6 +426,7 @@ source = { editable = "." }
 dependencies = [
     { name = "asyncpg" },
     { name = "authlib" },
+    { name = "eralchemy", extra = ["graphviz"] },
     { name = "fastapi" },
     { name = "httpx" },
     { name = "itsdangerous" },
@@ -423,6 +450,7 @@ dev = [
 requires-dist = [
     { name = "asyncpg", specifier = ">=0.30.0" },
     { name = "authlib", specifier = ">=1.6.1" },
+    { name = "eralchemy", extras = ["graphviz"], specifier = ">=1.5.0" },
     { name = "fastapi", specifier = ">=0.116.1" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "itsdangerous", specifier = ">=2.2.0" },

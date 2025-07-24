@@ -42,10 +42,7 @@ if settings.all_cors_origins:
     )
 
 app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
-
-# --- ADDED THIS to fix the HTTPS/HTTP Mixed Content Error ---
 app.add_middleware(ForceHTTPSRedirectMiddleware)
-# --- And this to prevent Host header attacks ---
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["vulcan.jlab.org"])
 
 app.include_router(api_router, prefix=settings.API_V1_STR)

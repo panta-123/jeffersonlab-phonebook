@@ -90,11 +90,15 @@
             logout();
         });
 
-        // Check authentication
-        checkAuth().then(isAuthenticated => {
-            if (!isAuthenticated) {
+        // Check authentication and initialize the app
+        checkAuth().then(authStatus => {
+            if (!authStatus.authenticated) {
                 window.location.href = '/login.html';
             } else {
+                // Set the global isAdmin variable from members.js
+                // You may need to add "let isAdmin = false;" to members.js
+                isAdmin = authStatus.isAdmin;
+                // Now load the members
                 loadMembers();
             }
         });

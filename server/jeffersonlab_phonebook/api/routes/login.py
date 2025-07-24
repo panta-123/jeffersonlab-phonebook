@@ -2,41 +2,23 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
-from pydantic import BaseModel, Field
-from typing import Optional
-
+from pydantic import BaseModel
 
 import jwt
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from jeffersonlab_phonebook.config.settings import settings
-from datetime import date, datetime, timedelta, timezone
+from datetime import date
 
 
 from jeffersonlab_phonebook.repositories.institution_repository import (
     InstitutionRepository,
 )
 from jeffersonlab_phonebook.repositories.member_repository import MemberRepository
+from jeffersonlab_phonebook.schemas.institutions_schemas import InstitutionCreate
 from jeffersonlab_phonebook.db.session import get_db
 from ..deps import create_jwt_and_cookie, get_oauth
 
 router = APIRouter(prefix="/user", tags=["user"])
-
-# Base schema for common fields
-class InstitutionBase(BaseModel):
-    full_name: str = Field(..., max_length=50)
-    short_name: str
-    country: str
-    region: Optional[str] = None
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
-    city: Optional[str] = None
-    address: Optional[str] = None
-    is_active: bool = True
-
-# Schema for creating a new institution
-# Inherits from base and adds the date_added field.
-class InstitutionCreate(InstitutionBase):
-    date_added: date
 
 @router.get("/login")
 async def login(request: Request, oauth=Depends(get_oauth)):
@@ -141,7 +123,7 @@ async def check_auth_status(request: Request, db: Session = Depends(get_db)):
 
         #Extract 'is_admin' status from the payload
         # Ensure 'is_admin' is included in the JWT payload when created
-        is_admin = payload.get("is_admin", False) # Default to False if not present
+        is_admin = payload.get("isadmin", False) # Default to False if not present
 
         return AuthStatus(authenticated=True, isAdmin=is_admin)
 

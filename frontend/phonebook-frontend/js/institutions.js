@@ -1,4 +1,9 @@
+// js/institutions.js
+
 let allInstitutions = [];
+// This global variable will be set in institutions.html
+// to track the admin status
+let isAdmin = false;
 
 // Load institutions from API
 async function loadInstitutions() {
@@ -6,13 +11,16 @@ async function loadInstitutions() {
         const response = await fetch(`${API_BASE_URL}/institutions`, {
             credentials: 'include'
         });
+        console.log('Institutions fetch status:', response.status);
+
 
         if (!response.ok) {
             throw new Error('Failed to fetch institutions');
         }
 
         allInstitutions = await response.json();
-        renderInstitutions(allInstitutions);
+        // Pass the isAdmin status to the rendering function
+        renderInstitutions(allInstitutions, isAdmin);
     } catch (error) {
         console.error('Error loading institutions:', error);
         alert('Failed to load institutions. Please try again.');
@@ -20,12 +28,28 @@ async function loadInstitutions() {
 }
 
 // Render institutions to the table
-function renderInstitutions(institutions) {
+function renderInstitutions(institutions, isAdmin) {
     const tableBody = document.getElementById('institutionsTableBody');
     tableBody.innerHTML = '';
 
+    // --- Layer 2: Conditional UI Rendering ---
+    // Hide or show the "Actions" header based on admin status
+    const actionsHeader = document.querySelector('th.admin-only');
+    if (actionsHeader) {
+        actionsHeader.style.display = isAdmin ? '' : 'none';
+    }
+
     institutions.forEach(institution => {
         const row = document.createElement('tr');
+
+        // Conditionally render the actions column
+        const actionsCell = isAdmin ? `
+            <td class="actions">
+                <button class="btn-edit" data-id="${institution.id}">Edit</button>
+            </td>
+        ` : `
+            <td class="actions"></td>
+        `;
 
         row.innerHTML = `
             <td>${institution.id}</td>
@@ -35,18 +59,18 @@ function renderInstitutions(institutions) {
             <td>${institution.city || 'N/A'}</td>
             <td>${institution.date_added}</td>
             <td>${institution.is_active ? 'Active' : 'Inactive'}</td>
-            <td class="admin-only">
-                <button class="btn-edit" data-id="${institution.id}">Edit</button>
-            </td>
+            ${actionsCell}
         `;
 
         tableBody.appendChild(row);
     });
 
-    // Add event listeners to edit buttons
-    document.querySelectorAll('.btn-edit').forEach(btn => {
-        btn.addEventListener('click', () => openEditModal(btn.dataset.id));
-    });
+    // Add event listeners only if the user is an admin
+    if (isAdmin) {
+        document.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', () => openEditModal(btn.dataset.id));
+        });
+    }
 }
 
 // Search functionality
@@ -54,7 +78,8 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
     const searchTerm = e.target.value.toLowerCase();
 
     if (!searchTerm) {
-        renderInstitutions(allInstitutions);
+        // Pass the current admin status
+        renderInstitutions(allInstitutions, isAdmin);
         return;
     }
 
@@ -65,7 +90,8 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
         (inst.city && inst.city.toLowerCase().includes(searchTerm))
     );
 
-    renderInstitutions(filtered);
+    // Pass the current admin status
+    renderInstitutions(filtered, isAdmin);
 });
 
 // Export to CSV
@@ -118,6 +144,8 @@ const modal = document.getElementById('editModal');
 const closeBtn = document.querySelector('.close');
 
 function openEditModal(institutionId) {
+    // You could also add an isAdmin check here for a better user experience
+    // but the form submission check is the most critical part.
     const institution = allInstitutions.find(i => i.id == institutionId);
     if (!institution) return;
 
@@ -148,6 +176,14 @@ window.addEventListener('click', (e) => {
 document.getElementById('editInstitutionForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    // --- Layer 3: Client-Side Request Validation ---
+    // This is a critical check to prevent unauthorized requests from even being sent.
+    if (!isAdmin) {
+        console.error('Permission denied: Not an administrator.');
+        alert('You do not have permission to edit institutions.');
+        return;
+    }
+
     const institutionId = document.getElementById('editInstitutionId').value;
     const institutionData = {
         full_name: document.getElementById('editFullName').value,
@@ -160,7 +196,7 @@ document.getElementById('editInstitutionForm').addEventListener('submit', async 
     };
 
     try {
-        const response = await fetch(`${API_BASE_URL}/${institutionId}`, {
+        const response = await fetch(`${API_BASE_URL}/institutions/${institutionId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -170,10 +206,13 @@ document.getElementById('editInstitutionForm').addEventListener('submit', async 
         });
 
         if (!response.ok) {
+            // A 403 Forbidden status would be an example of a backend check failing
+            if (response.status === 403) {
+                throw new Error('Permission denied.');
+            }
             throw new Error('Failed to update institution');
         }
 
-        // Refresh the institutions list
         await loadInstitutions();
         closeModal();
     } catch (error) {

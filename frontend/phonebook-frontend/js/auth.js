@@ -2,50 +2,55 @@
 
 // Import the API_BASE_URL from your config file if you're using modules,
 // or ensure config.js is loaded before auth.js in your HTML.
-// (e.g., <script src="js/config.js"></script> <script src="js/auth.js"></script>)
 
 async function checkAuth() {
+    // Return a structured object with both authentication and admin status
     if (TEST_MODE) {
         document.body.classList.add('is-admin');
-        return true;
+        return { authenticated: true, isAdmin: true };
     }
 
     try {
-        // Construct the full API URL using the base URL
         const response = await fetch(`${API_BASE_URL}/user/check-auth`, {
             credentials: 'include'
         });
 
-        if (!response.ok) return true;
-
+        // We must always process the JSON response
         const data = await response.json();
-        if (data.isAdmin) document.body.classList.add('is-admin');
-        return data.authenticated;
+
+        // Use the data from the response body to determine status
+        if (data.authenticated) {
+            if (data.isAdmin) {
+                document.body.classList.add('is-admin');
+            }
+            return { authenticated: true, isAdmin: data.isAdmin };
+        } else {
+            return { authenticated: false, isAdmin: false };
+        }
+
     } catch (error) {
+        // This block catches network errors or issues with JSON parsing.
         console.error('Auth check failed:', error);
-        return false;
+        return { authenticated: false, isAdmin: false };
     }
 }
 
 
 async function logout() {
     if (TEST_MODE) {
-        // In test mode, we might just simulate a logout and redirect
         console.log("Simulating logout in TEST_MODE");
         window.location.href = '/login.html';
         return;
     }
     try {
-        // Send a request to your server's logout endpoint
         const response = await fetch(`${API_BASE_URL}/user/logout`, {
-            method: 'POST', // or GET, depending on your API
+            method: 'POST',
             credentials: 'include',
         });
 
         if (response.ok) {
-            // If logout was successful on the server, redirect the user
             console.log("Logout successful");
-            window.location.href = '/login.html'; // Or wherever your login page is
+            window.location.href = '/login.html';
         } else {
             console.error('Logout failed on the server.');
         }

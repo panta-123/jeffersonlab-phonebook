@@ -5,16 +5,13 @@ from jeffersonlab_phonebook.config.settings import settings
 from jeffersonlab_phonebook.db.models import Base 
 
 
-SQLALCHEMY_DATABASE_URL = str(settings.SQLALCHEMY_DATABASE_URI)
-
-# Replace with your actual database URL
 # For PostgreSQL: "postgresql://user:password@host:port/dbname"
 # For SQLite: "sqlite:///./jeffersonlab_phonebook.db"
-# SQLALCHEMY_DATABASE_URL = "sqlite:///./jeffersonlab_phonebook.db" # Using SQLite for simplicity
+# mysql://user:password@host:port/dbname
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL  # , connect_args={"check_same_thread": False} # Needed for SQLite
-)
+SQLALCHEMY_DATABASE_URL = str(settings.SQLALCHEMY_DATABASE_URI)
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 # create table if not exits
 Base.metadata.create_all(bind=engine)

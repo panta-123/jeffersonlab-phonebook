@@ -4,7 +4,7 @@ from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
 
 from jeffersonlab_phonebook.db.models import Institution
-from jeffersonlab_phonebook.schemas.members import (
+from jeffersonlab_phonebook.schemas.institutions_schemas import (
     InstitutionCreate,
     InstitutionUpdate,
 )

@@ -6,15 +6,14 @@ from sqlalchemy.orm import Session
 from jeffersonlab_phonebook.repositories.institution_repository import (
     InstitutionRepository,
 )
-from jeffersonlab_phonebook.schemas.members import (
+from jeffersonlab_phonebook.schemas.institutions_schemas import (
     InstitutionCreate,
     InstitutionResponse,
     InstitutionUpdate,
 )
 from jeffersonlab_phonebook.db.session import get_db
 
-# Your security dependency that provides an active Member ORM object
-from ..deps import get_current_user  # Use this one!
+from ..deps import get_current_user
 
 router = APIRouter(prefix="/institutions", tags=["institutions"])
 

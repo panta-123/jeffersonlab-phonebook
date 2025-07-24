@@ -24,11 +24,6 @@ def get_oauth() -> OAuth:
     return oauth
 
 
-JWT_SECRET = "your-secret-key"  # Use a secure secret in production
-JWT_ALGORITHM = "HS256"
-JWT_EXP_DELTA_SECONDS = 3600
-
-
 def create_jwt_and_cookie(member, userinfo, redirect_url="/"):
     """_summary_
 
@@ -41,7 +36,7 @@ def create_jwt_and_cookie(member, userinfo, redirect_url="/"):
         "sub": userinfo["sub"],
         "email": member.email,
         "name": f"{member.first_name} {member.last_name}",
-        "isadmin": True,
+        "isadmin": False,
         "exp": datetime.now(timezone.utc)
         + timedelta(seconds=settings.JWT_EXP_DELTA_SECONDS),
     }
@@ -56,7 +51,7 @@ def create_jwt_and_cookie(member, userinfo, redirect_url="/"):
         httponly=True,
         secure=True,
         samesite="lax",
-        max_age=JWT_EXP_DELTA_SECONDS,
+        max_age=settings.JWT_EXP_DELTA_SECONDS,
         path="/",
     )
     return response
@@ -76,7 +71,7 @@ def get_current_user(request: Request):
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing token"
         )
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
         return payload  # or fetch user from DB using payload info
     except jwt.PyJWTError as exc:
         raise HTTPException(
