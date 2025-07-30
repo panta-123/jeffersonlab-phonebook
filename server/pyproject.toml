@@ -42,7 +42,9 @@ exclude = [
     "alembic",
     ".*models\\.py$",
     "pgdata",
+    "nginx"
 ] # Exclude your alembic folder as well
+files = "./server"
 
 [tool.ruff]
 # Minimal Ruff configuration: target Python version, exclude common folders

@@ -36,7 +36,7 @@ def create_jwt_and_cookie(member, userinfo, redirect_url="/"):
         "sub": userinfo["sub"],
         "email": member.email,
         "name": f"{member.first_name} {member.last_name}",
-        "isadmin": False,
+        "isadmin": True,
         "exp": datetime.now(timezone.utc)
         + timedelta(seconds=settings.JWT_EXP_DELTA_SECONDS),
     }

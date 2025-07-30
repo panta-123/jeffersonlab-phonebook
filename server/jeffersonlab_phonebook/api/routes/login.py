@@ -2,7 +2,6 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
 
 import jwt
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
@@ -15,6 +14,7 @@ from jeffersonlab_phonebook.repositories.institution_repository import (
 )
 from jeffersonlab_phonebook.repositories.member_repository import MemberRepository
 from jeffersonlab_phonebook.schemas.institutions_schemas import InstitutionCreate
+from jeffersonlab_phonebook.schemas.auth_schemas import AuthStatus, ErrorDetail
 from jeffersonlab_phonebook.db.session import get_db
 from ..deps import create_jwt_and_cookie, get_oauth
 
@@ -79,7 +79,7 @@ async def auth(
             )
             institution = institution_repo.create(institution_data)
 
-        member = member_repo.create(userinfo, institution.id)
+        member = member_repo.create_from_oauth_userinfo(userinfo, institution.id)
     elif not member.is_active:
         # If the member is inactive, you might want to handle this case
         return {"error": "Member is inactive"}
@@ -96,21 +96,24 @@ async def logout(response: Response):
     return {"message": "Logged out successfully"}
 
 
-class AuthStatus(BaseModel):
-    authenticated: bool
-    isAdmin: bool
-
-@router.get("/check-auth")
+@router.get(
+    "/check-auth",
+    response_model=AuthStatus,
+    responses={
+        401: {"model": ErrorDetail, "description": "Unauthorized: Token expired or invalid"},
+        500: {"model": ErrorDetail, "description": "Internal Server Error"}
+    }
+)
 async def check_auth_status(request: Request, db: Session = Depends(get_db)):
     """
     Checks the authentication status of the user based on the access_token cookie
-    and returns their admin status.
+    and returns their authentication status, admin status, email, and name.
     """
     access_token_cookie = request.cookies.get("access_token")
 
     if not access_token_cookie:
-        # No token, user is not authenticated
-        return {"authenticated": False, "isAdmin": False}
+        # No token, user is not authenticated. Return all fields as None/False.
+        return AuthStatus(authenticated=False, isAdmin=False, email=None, name=None)
 
     try:
         # Decode the JWT token
@@ -121,24 +124,38 @@ async def check_auth_status(request: Request, db: Session = Depends(get_db)):
             options={"verify_exp": True} # pyjwt can automatically verify expiration
         )
 
-        #Extract 'is_admin' status from the payload
-        # Ensure 'is_admin' is included in the JWT payload when created
+        # Extract 'is_admin', 'email', and 'name' from the payload
         is_admin = payload.get("isadmin", False) # Default to False if not present
+        user_email = payload.get("email") # Get email from payload
+        user_name = payload.get("name")   # Get name from payload
 
-        return AuthStatus(authenticated=True, isAdmin=is_admin)
+        return AuthStatus(
+            authenticated=True,
+            isAdmin=is_admin,
+            email=user_email, # Include extracted email
+            name=user_name    # Include extracted name
+        )
 
     except ExpiredSignatureError:
-        # The token has expired
         print("ExpiredSignatureError: Token has expired.")
-        return AuthStatus(authenticated=False, isAdmin=False)
+        # Raise 401 Unauthorized for expired tokens
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication token has expired.",
+            headers={"WWW-Authenticate": "Bearer error=\"token_expired\""}
+        )
     except InvalidTokenError:
-        # Token is invalid (e.g., tampered, wrong signature)
         print("InvalidTokenError: Invalid token detected during check-auth.")
-        return AuthStatus(authenticated=False, isAdmin=False)
+        # Raise 401 Unauthorized for invalid tokens
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication token.",
+            headers={"WWW-Authenticate": "Bearer error=\"invalid_token\""}
+        )
     except Exception as e:
-        # Catch any other unexpected errors
         print(f"An unexpected error occurred during check-auth: {e}")
+        # Raise 500 Internal Server Error for unhandled exceptions
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error during authentication check.",
+            detail="An internal server error occurred during authentication check."
         )

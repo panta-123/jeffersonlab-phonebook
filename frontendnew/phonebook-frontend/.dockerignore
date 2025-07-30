@@ -1,0 +1,8 @@
+node_modules
+# Build artifacts
+dist
+build
+
+# Log files and environment variables
+*.log
+.env
