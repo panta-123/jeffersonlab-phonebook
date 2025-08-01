@@ -1,9 +1,8 @@
-
 services:
   backend:
     container_name: phonebook-backend
     build:
-      context: ./server/
+      context: ./server
       dockerfile: Dockerfile
     env_file:
       - .env
@@ -31,24 +30,34 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-
-# ... (other services like nginx and networks)
-
+  
   nginx:
-    image: nginx:latest
+    image: nginx:stable-alpine
     ports:
+      # Expose HTTP and HTTPS ports to the host machine
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./nginx/ssl:/etc/nginx/ssl
-      - ./frontend/phonebook-frontend:/phonebook-frontend
     depends_on:
       - backend
-    restart: always
+      - frontend
+    networks:
+      - app_network
+  
+  # Frontend Service (React + Nginx)
+  frontend:
+    build:
+      context: ./frontendnew/phonebook-frontend
+      dockerfile: Dockerfile
+    # No ports are exposed to the host machine.
+    # The reverse-proxy communicates with this service over the internal docker network.
     networks:
       - app_network
 
+
+# Define the network that allows containers to communicate with each other
 networks:
   app_network:
     driver: bridge

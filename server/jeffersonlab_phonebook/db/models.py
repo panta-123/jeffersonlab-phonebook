@@ -17,6 +17,8 @@ class Institution(Base):
     __tablename__ = "institutions"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    entityid: Mapped[str] = mapped_column(String)
+    rorid: Mapped[str] = mapped_column(String, nullable=True)
     full_name: Mapped[str] = mapped_column(String(50))
     short_name: Mapped[str] = mapped_column(String)
     country: Mapped[str] = mapped_column(String)
@@ -139,5 +141,4 @@ class InstitutionalBoardMember(Base):
 
     # This could be useful if you need a chair for the board itself
     is_chair: Mapped[bool] = mapped_column(default=False)
-
 

@@ -5,8 +5,8 @@ from pydantic import BaseModel, EmailStr
 class AuthStatus(BaseModel):
     authenticated: bool
     isAdmin: bool
-    email: Optional[EmailStr] = None
-    name: Optional[str]= None
+    email: EmailStr
+    name: str
 
 class ErrorDetail(BaseModel):
     detail: str

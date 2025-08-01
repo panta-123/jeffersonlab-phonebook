@@ -107,6 +107,12 @@ def update_institution(
     """
     institution_repo = InstitutionRepository(db)
     db_institution = institution_repo.get(institution_id)
+    #update_data = institution_in.model_dump(exclude_unset=True)
+    #rorid_updated = False
+    #if "rorid" in update_data and \
+    #    (db_institution.rorid is None or db_institution.rorid == ""):
+    #    if update_data["rorid"] is not None and update_data["rorid"] != "":
+    #        rorid_updated = True
     if not db_institution:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Institution not found"

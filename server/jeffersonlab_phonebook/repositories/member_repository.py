@@ -80,8 +80,7 @@ class MemberRepository:
             date_joined=date.today(),
             is_active=True, # Default for new OAuth users
             experimental_data={
-                "sub": userinfo.get("sub"),
-                "idp_name": userinfo.get("idp_name"),
+                "sub": userinfo.get("sub")
             },
         )
         return self.create(member_create_data) # Use the generic create method

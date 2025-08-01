@@ -1,23 +1,22 @@
+// pages/InstitutionPage.tsx
 import React, { useEffect, useState } from 'react';
-import { checkAuthStatus } from '../utils/auth';
-import type { AuthStatus, InstitutionResponse } from '../client/types.gen';
 import { institutionsListInstitutions } from '../client/sdk.gen';
+import type { InstitutionResponse } from '../client/types.gen';
+import { useAuth } from '../context/AuthContext'; // Import the new hook
 
 const InstitutionPage: React.FC = () => {
+    const { user, isAuthenticated, isLoading: authLoading } = useAuth(); // Use the hook
     const [institutions, setInstitutions] = useState<InstitutionResponse[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             setError(null);
 
-            const status = await checkAuthStatus();
-            setAuthStatus(status);
-
             try {
+                // The API call is now made directly
                 const apiResponse = await institutionsListInstitutions({
                     query: { skip: 0, limit: 100 }
                 });
@@ -34,10 +33,14 @@ const InstitutionPage: React.FC = () => {
             }
         };
 
-        fetchData();
-    }, []);
+        // Only fetch data if the user is authenticated and the auth status is no longer loading
+        if (!authLoading && isAuthenticated) {
+            fetchData();
+        }
+    }, [isAuthenticated, authLoading]); // Dependency on auth state
 
-    if (loading) {
+    // Handle loading state for either auth or data fetching
+    if (loading || authLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-100">
                 <p className="text-lg text-gray-700">Loading institutions data...</p>
@@ -45,6 +48,7 @@ const InstitutionPage: React.FC = () => {
         );
     }
 
+    // Handle error state
     if (error) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 flex flex-col items-center p-4">
@@ -52,9 +56,9 @@ const InstitutionPage: React.FC = () => {
                     <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-gray-200">
                         <h1 className="text-4xl font-extrabold text-red-600 mb-6">Error</h1>
                         <p className="text-lg text-red-500 mb-4">{error}</p>
-                        {authStatus && (
+                        {user && (
                             <p className="text-md text-gray-500">
-                                Logged in as: <span className="font-semibold text-purple-600">{authStatus.email}</span>
+                                Logged in as: <span className="font-semibold text-purple-600">{user.email}</span>
                             </p>
                         )}
                     </div>
@@ -63,18 +67,19 @@ const InstitutionPage: React.FC = () => {
         );
     }
 
+    // Render main content
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 flex flex-col items-center p-4">
             <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-6xl border border-gray-200">
                 <h1 className="text-4xl font-extrabold text-gray-800 mb-6 text-center">Institutions</h1>
 
-                {authStatus && (
+                {user && (
                     <p className="text-lg text-gray-600 mb-8 text-center">
                         Logged in as:{' '}
                         <span className="font-semibold text-purple-600">
-                            {authStatus.name || authStatus.email}
+                            {user.name || user.email}
                         </span>
-                        {authStatus.isAdmin && (
+                        {user.isadmin && (
                             <span className="ml-2 text-sm text-green-600">(Admin)</span>
                         )}
                     </p>

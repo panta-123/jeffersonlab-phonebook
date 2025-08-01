@@ -1,36 +1,22 @@
 // src/pages/DashboardPage.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { checkAuthStatus } from '../utils/auth'; // Import checkAuthStatus
-import type { AuthStatus } from '../client/types.gen'; // Import AuthStatus type
+import { useAuth } from '../context/AuthContext'; // Import the new hook
 
 const DashboardPage: React.FC = () => {
     const navigate = useNavigate();
-    const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const { user, isAuthenticated, isLoading } = useAuth(); // Use the hook to get auth state
 
+    // The useEffect now only handles the redirect if the user isn't authenticated
     useEffect(() => {
-        const verifyAuth = async () => {
-            try {
-                const status = await checkAuthStatus();
-                setAuthStatus(status);
-                if (!status.authenticated) {
-                    // If not authenticated, redirect to login page
-                    navigate('/login', { state: { from: location } });
-                }
-            } catch (error) {
-                console.error("Error verifying authentication on dashboard:", error);
-                // In case of an error checking status, assume not authenticated
-                navigate('/login', { state: { from: location } });
-            } finally {
-                setLoading(false);
-            }
-        };
+        // We only check for a redirect once the loading state is false
+        if (!isLoading && !isAuthenticated) {
+            navigate('/login', { state: { from: location.pathname } });
+        }
+    }, [isLoading, isAuthenticated, navigate]);
 
-        verifyAuth();
-    }, [navigate]);
-
-    if (loading) {
+    // Handle loading state
+    if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-100">
                 <p className="text-xl text-gray-700">Loading dashboard...</p>
@@ -38,29 +24,28 @@ const DashboardPage: React.FC = () => {
         );
     }
 
-    // If authStatus is null or not authenticated after loading, it means we've redirected
-    // So this render should theoretically only happen if authenticated.
-    // Added a defensive check anyway.
-    if (!authStatus?.authenticated) {
-        return null; // Or a fallback component, as a redirect should have occurred
+    // This part should be unreachable due to the useEffect redirect,
+    // but it's a good defensive practice.
+    if (!isAuthenticated) {
+        return null;
     }
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
             <div className="bg-white p-8 rounded-lg shadow-xl text-center max-w-lg w-full">
                 <h1 className="text-3xl font-bold text-blue-700 mb-4">
-                    Welcome, {authStatus.name || authStatus.email || 'User'}!
+                    Welcome, {user?.name || user?.email?.split('@')[0] || 'User'}!
                 </h1>
                 <p className="text-lg text-gray-700 mb-6">
                     This is your dashboard. You are successfully logged in.
                 </p>
 
-                {authStatus.email && (
+                {user?.email && (
                     <p className="text-md text-gray-600 mb-2">
-                        Your email: <span className="font-semibold">{authStatus.email}</span>
+                        Your email: <span className="font-semibold">{user.email}</span>
                     </p>
                 )}
-                {authStatus.isAdmin && (
+                {user?.isadmin && ( // Changed from authStatus.isAdmin
                     <p className="text-md text-green-600 font-semibold mb-2">
                         (Administrator Privileges)
                     </p>

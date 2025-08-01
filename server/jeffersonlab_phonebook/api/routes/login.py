@@ -76,6 +76,7 @@ async def auth(
                 short_name=userinfo.get("idp_name", "Default Institution"),
                 date_added=date.today(),
                 country=userinfo.get("country", "US"),
+                entityid=userinfo.get("idp")
             )
             institution = institution_repo.create(institution_data)
 
@@ -113,7 +114,12 @@ async def check_auth_status(request: Request, db: Session = Depends(get_db)):
 
     if not access_token_cookie:
         # No token, user is not authenticated. Return all fields as None/False.
-        return AuthStatus(authenticated=False, isAdmin=False, email=None, name=None)
+        # Raise 401 Unauthorized for invalid tokens
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication token.",
+            headers={"WWW-Authenticate": "Bearer error=\"invalid_token\""}
+        )
 
     try:
         # Decode the JWT token

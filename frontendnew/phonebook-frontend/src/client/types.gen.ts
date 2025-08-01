@@ -15,11 +15,11 @@ export type AuthStatus = {
     /**
      * Email
      */
-    email?: string | null;
+    email: string;//| null;
     /**
      * Name
      */
-    name?: string | null;
+    name: string; //| null;
 };
 
 /**

@@ -148,5 +148,8 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_EXP_DELTA_SECONDS: int = 3600
 
+    ROR_API_BASE_URL: str = "https://api.ror.org/organizations/"
+
+
 
 settings = Settings()  # type: ignore
