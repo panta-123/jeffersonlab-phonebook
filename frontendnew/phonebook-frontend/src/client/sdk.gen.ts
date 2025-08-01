@@ -3,6 +3,7 @@
 import type { Options as ClientOptions, TDataShape, Client } from './client';
 import type { UserLoginData, UserLoginResponses, UserLoginCallbackData, UserLoginCallbackResponses, UserLogoutData, UserLogoutResponses, UserCheckAuthStatusData, UserCheckAuthStatusResponses, UserCheckAuthStatusErrors, InstitutionsListInstitutionsData, InstitutionsListInstitutionsResponses, InstitutionsListInstitutionsErrors, InstitutionsCreateInstitutionData, InstitutionsCreateInstitutionResponses, InstitutionsCreateInstitutionErrors, InstitutionsDeleteInstitutionData, InstitutionsDeleteInstitutionResponses, InstitutionsDeleteInstitutionErrors, InstitutionsGetInstitutionData, InstitutionsGetInstitutionResponses, InstitutionsGetInstitutionErrors, InstitutionsUpdateInstitutionData, InstitutionsUpdateInstitutionResponses, InstitutionsUpdateInstitutionErrors, MembersListMembersData, MembersListMembersResponses, MembersCreateMemberData, MembersCreateMemberResponses, MembersCreateMemberErrors, MembersDeleteMemberData, MembersDeleteMemberResponses, MembersDeleteMemberErrors, MembersGetMemberData, MembersGetMemberResponses, MembersGetMemberErrors, MembersUpdateMemberData, MembersUpdateMemberResponses, MembersUpdateMemberErrors, BoardMembersListBoardMembershipsData, BoardMembersListBoardMembershipsResponses, BoardMembersListBoardMembershipsErrors, BoardMembersCreateBoardMembershipData, BoardMembersCreateBoardMembershipResponses, BoardMembersCreateBoardMembershipErrors, BoardMembersDeleteBoardMembershipData, BoardMembersDeleteBoardMembershipResponses, BoardMembersDeleteBoardMembershipErrors, BoardMembersGetBoardMembershipData, BoardMembersGetBoardMembershipResponses, BoardMembersGetBoardMembershipErrors, BoardMembersUpdateBoardMembershipData, BoardMembersUpdateBoardMembershipResponses, BoardMembersUpdateBoardMembershipErrors, WorkingGroupsListGroupsData, WorkingGroupsListGroupsResponses, WorkingGroupsListGroupsErrors, WorkingGroupsCreateGroupData, WorkingGroupsCreateGroupResponses, WorkingGroupsCreateGroupErrors, WorkingGroupsDeleteGroupData, WorkingGroupsDeleteGroupResponses, WorkingGroupsDeleteGroupErrors, WorkingGroupsGetGroupData, WorkingGroupsGetGroupResponses, WorkingGroupsGetGroupErrors, WorkingGroupsUpdateGroupData, WorkingGroupsUpdateGroupResponses, WorkingGroupsUpdateGroupErrors, WorkingGroupsListGroupMembersOfGroupData, WorkingGroupsListGroupMembersOfGroupResponses, WorkingGroupsListGroupMembersOfGroupErrors, WorkingGroupsAddMemberToGroupData, WorkingGroupsAddMemberToGroupResponses, WorkingGroupsAddMemberToGroupErrors, WorkingGroupsDeleteGroupMemberData, WorkingGroupsDeleteGroupMemberResponses, WorkingGroupsDeleteGroupMemberErrors, WorkingGroupsUpdateGroupMemberRoleData, WorkingGroupsUpdateGroupMemberRoleResponses, WorkingGroupsUpdateGroupMemberRoleErrors } from './types.gen';
 import { client as _heyApiClient } from './client.gen';
+import { institutionsListInstitutionsResponseTransformer, institutionsCreateInstitutionResponseTransformer, institutionsGetInstitutionResponseTransformer, institutionsUpdateInstitutionResponseTransformer, membersListMembersResponseTransformer, membersCreateMemberResponseTransformer, membersGetMemberResponseTransformer, membersUpdateMemberResponseTransformer, boardMembersListBoardMembershipsResponseTransformer, boardMembersCreateBoardMembershipResponseTransformer, boardMembersGetBoardMembershipResponseTransformer, boardMembersUpdateBoardMembershipResponseTransformer } from './transformers.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = ClientOptions<TData, ThrowOnError> & {
     /**
@@ -27,6 +28,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  */
 export const userLogin = <ThrowOnError extends boolean = false>(options?: Options<UserLoginData, ThrowOnError>) => {
     return (options?.client ?? _heyApiClient).get<UserLoginResponses, unknown, ThrowOnError>({
+        responseType: 'json',
         url: '/api/v1/user/login',
         ...options
     });
@@ -42,6 +44,7 @@ export const userLogin = <ThrowOnError extends boolean = false>(options?: Option
  */
 export const userLoginCallback = <ThrowOnError extends boolean = false>(options?: Options<UserLoginCallbackData, ThrowOnError>) => {
     return (options?.client ?? _heyApiClient).get<UserLoginCallbackResponses, unknown, ThrowOnError>({
+        responseType: 'json',
         url: '/api/v1/user/callback',
         ...options
     });
@@ -53,6 +56,7 @@ export const userLoginCallback = <ThrowOnError extends boolean = false>(options?
  */
 export const userLogout = <ThrowOnError extends boolean = false>(options?: Options<UserLogoutData, ThrowOnError>) => {
     return (options?.client ?? _heyApiClient).post<UserLogoutResponses, unknown, ThrowOnError>({
+        responseType: 'json',
         url: '/api/v1/user/logout',
         ...options
     });
@@ -65,6 +69,7 @@ export const userLogout = <ThrowOnError extends boolean = false>(options?: Optio
  */
 export const userCheckAuthStatus = <ThrowOnError extends boolean = false>(options?: Options<UserCheckAuthStatusData, ThrowOnError>) => {
     return (options?.client ?? _heyApiClient).get<UserCheckAuthStatusResponses, UserCheckAuthStatusErrors, ThrowOnError>({
+        responseType: 'json',
         url: '/api/v1/user/check-auth',
         ...options
     });
@@ -76,6 +81,8 @@ export const userCheckAuthStatus = <ThrowOnError extends boolean = false>(option
  */
 export const institutionsListInstitutions = <ThrowOnError extends boolean = false>(options?: Options<InstitutionsListInstitutionsData, ThrowOnError>) => {
     return (options?.client ?? _heyApiClient).get<InstitutionsListInstitutionsResponses, InstitutionsListInstitutionsErrors, ThrowOnError>({
+        responseTransformer: institutionsListInstitutionsResponseTransformer,
+        responseType: 'json',
         url: '/api/v1/institutions/',
         ...options
     });
@@ -87,6 +94,8 @@ export const institutionsListInstitutions = <ThrowOnError extends boolean = fals
  */
 export const institutionsCreateInstitution = <ThrowOnError extends boolean = false>(options: Options<InstitutionsCreateInstitutionData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).post<InstitutionsCreateInstitutionResponses, InstitutionsCreateInstitutionErrors, ThrowOnError>({
+        responseTransformer: institutionsCreateInstitutionResponseTransformer,
+        responseType: 'json',
         url: '/api/v1/institutions/',
         ...options,
         headers: {
@@ -113,6 +122,8 @@ export const institutionsDeleteInstitution = <ThrowOnError extends boolean = fal
  */
 export const institutionsGetInstitution = <ThrowOnError extends boolean = false>(options: Options<InstitutionsGetInstitutionData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).get<InstitutionsGetInstitutionResponses, InstitutionsGetInstitutionErrors, ThrowOnError>({
+        responseTransformer: institutionsGetInstitutionResponseTransformer,
+        responseType: 'json',
         url: '/api/v1/institutions/{institution_id}',
         ...options
     });
@@ -124,6 +135,8 @@ export const institutionsGetInstitution = <ThrowOnError extends boolean = false>
  */
 export const institutionsUpdateInstitution = <ThrowOnError extends boolean = false>(options: Options<InstitutionsUpdateInstitutionData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).put<InstitutionsUpdateInstitutionResponses, InstitutionsUpdateInstitutionErrors, ThrowOnError>({
+        responseTransformer: institutionsUpdateInstitutionResponseTransformer,
+        responseType: 'json',
         url: '/api/v1/institutions/{institution_id}',
         ...options,
         headers: {
@@ -139,6 +152,8 @@ export const institutionsUpdateInstitution = <ThrowOnError extends boolean = fal
  */
 export const membersListMembers = <ThrowOnError extends boolean = false>(options?: Options<MembersListMembersData, ThrowOnError>) => {
     return (options?.client ?? _heyApiClient).get<MembersListMembersResponses, unknown, ThrowOnError>({
+        responseTransformer: membersListMembersResponseTransformer,
+        responseType: 'json',
         url: '/api/v1/members/',
         ...options
     });
@@ -150,6 +165,8 @@ export const membersListMembers = <ThrowOnError extends boolean = false>(options
  */
 export const membersCreateMember = <ThrowOnError extends boolean = false>(options: Options<MembersCreateMemberData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).post<MembersCreateMemberResponses, MembersCreateMemberErrors, ThrowOnError>({
+        responseTransformer: membersCreateMemberResponseTransformer,
+        responseType: 'json',
         url: '/api/v1/members/',
         ...options,
         headers: {
@@ -176,6 +193,8 @@ export const membersDeleteMember = <ThrowOnError extends boolean = false>(option
  */
 export const membersGetMember = <ThrowOnError extends boolean = false>(options: Options<MembersGetMemberData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).get<MembersGetMemberResponses, MembersGetMemberErrors, ThrowOnError>({
+        responseTransformer: membersGetMemberResponseTransformer,
+        responseType: 'json',
         url: '/api/v1/members/{member_id}',
         ...options
     });
@@ -187,6 +206,8 @@ export const membersGetMember = <ThrowOnError extends boolean = false>(options: 
  */
 export const membersUpdateMember = <ThrowOnError extends boolean = false>(options: Options<MembersUpdateMemberData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).patch<MembersUpdateMemberResponses, MembersUpdateMemberErrors, ThrowOnError>({
+        responseTransformer: membersUpdateMemberResponseTransformer,
+        responseType: 'json',
         url: '/api/v1/members/{member_id}',
         ...options,
         headers: {
@@ -202,6 +223,8 @@ export const membersUpdateMember = <ThrowOnError extends boolean = false>(option
  */
 export const boardMembersListBoardMemberships = <ThrowOnError extends boolean = false>(options?: Options<BoardMembersListBoardMembershipsData, ThrowOnError>) => {
     return (options?.client ?? _heyApiClient).get<BoardMembersListBoardMembershipsResponses, BoardMembersListBoardMembershipsErrors, ThrowOnError>({
+        responseTransformer: boardMembersListBoardMembershipsResponseTransformer,
+        responseType: 'json',
         url: '/api/v1/board-members/',
         ...options
     });
@@ -213,6 +236,8 @@ export const boardMembersListBoardMemberships = <ThrowOnError extends boolean = 
  */
 export const boardMembersCreateBoardMembership = <ThrowOnError extends boolean = false>(options: Options<BoardMembersCreateBoardMembershipData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).post<BoardMembersCreateBoardMembershipResponses, BoardMembersCreateBoardMembershipErrors, ThrowOnError>({
+        responseTransformer: boardMembersCreateBoardMembershipResponseTransformer,
+        responseType: 'json',
         url: '/api/v1/board-members/',
         ...options,
         headers: {
@@ -239,6 +264,8 @@ export const boardMembersDeleteBoardMembership = <ThrowOnError extends boolean =
  */
 export const boardMembersGetBoardMembership = <ThrowOnError extends boolean = false>(options: Options<BoardMembersGetBoardMembershipData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).get<BoardMembersGetBoardMembershipResponses, BoardMembersGetBoardMembershipErrors, ThrowOnError>({
+        responseTransformer: boardMembersGetBoardMembershipResponseTransformer,
+        responseType: 'json',
         url: '/api/v1/board-members/{ibm_id}',
         ...options
     });
@@ -250,6 +277,8 @@ export const boardMembersGetBoardMembership = <ThrowOnError extends boolean = fa
  */
 export const boardMembersUpdateBoardMembership = <ThrowOnError extends boolean = false>(options: Options<BoardMembersUpdateBoardMembershipData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).put<BoardMembersUpdateBoardMembershipResponses, BoardMembersUpdateBoardMembershipErrors, ThrowOnError>({
+        responseTransformer: boardMembersUpdateBoardMembershipResponseTransformer,
+        responseType: 'json',
         url: '/api/v1/board-members/{ibm_id}',
         ...options,
         headers: {
@@ -265,6 +294,7 @@ export const boardMembersUpdateBoardMembership = <ThrowOnError extends boolean =
  */
 export const workingGroupsListGroups = <ThrowOnError extends boolean = false>(options?: Options<WorkingGroupsListGroupsData, ThrowOnError>) => {
     return (options?.client ?? _heyApiClient).get<WorkingGroupsListGroupsResponses, WorkingGroupsListGroupsErrors, ThrowOnError>({
+        responseType: 'json',
         url: '/api/v1/groups/',
         ...options
     });
@@ -276,6 +306,7 @@ export const workingGroupsListGroups = <ThrowOnError extends boolean = false>(op
  */
 export const workingGroupsCreateGroup = <ThrowOnError extends boolean = false>(options: Options<WorkingGroupsCreateGroupData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).post<WorkingGroupsCreateGroupResponses, WorkingGroupsCreateGroupErrors, ThrowOnError>({
+        responseType: 'json',
         url: '/api/v1/groups/',
         ...options,
         headers: {
@@ -302,6 +333,7 @@ export const workingGroupsDeleteGroup = <ThrowOnError extends boolean = false>(o
  */
 export const workingGroupsGetGroup = <ThrowOnError extends boolean = false>(options: Options<WorkingGroupsGetGroupData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).get<WorkingGroupsGetGroupResponses, WorkingGroupsGetGroupErrors, ThrowOnError>({
+        responseType: 'json',
         url: '/api/v1/groups/{group_id}',
         ...options
     });
@@ -313,6 +345,7 @@ export const workingGroupsGetGroup = <ThrowOnError extends boolean = false>(opti
  */
 export const workingGroupsUpdateGroup = <ThrowOnError extends boolean = false>(options: Options<WorkingGroupsUpdateGroupData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).put<WorkingGroupsUpdateGroupResponses, WorkingGroupsUpdateGroupErrors, ThrowOnError>({
+        responseType: 'json',
         url: '/api/v1/groups/{group_id}',
         ...options,
         headers: {
@@ -328,6 +361,7 @@ export const workingGroupsUpdateGroup = <ThrowOnError extends boolean = false>(o
  */
 export const workingGroupsListGroupMembersOfGroup = <ThrowOnError extends boolean = false>(options: Options<WorkingGroupsListGroupMembersOfGroupData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).get<WorkingGroupsListGroupMembersOfGroupResponses, WorkingGroupsListGroupMembersOfGroupErrors, ThrowOnError>({
+        responseType: 'json',
         url: '/api/v1/groups/{group_id}/members',
         ...options
     });
@@ -339,6 +373,7 @@ export const workingGroupsListGroupMembersOfGroup = <ThrowOnError extends boolea
  */
 export const workingGroupsAddMemberToGroup = <ThrowOnError extends boolean = false>(options: Options<WorkingGroupsAddMemberToGroupData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).post<WorkingGroupsAddMemberToGroupResponses, WorkingGroupsAddMemberToGroupErrors, ThrowOnError>({
+        responseType: 'json',
         url: '/api/v1/groups/{group_id}/members',
         ...options,
         headers: {
@@ -365,6 +400,7 @@ export const workingGroupsDeleteGroupMember = <ThrowOnError extends boolean = fa
  */
 export const workingGroupsUpdateGroupMemberRole = <ThrowOnError extends boolean = false>(options: Options<WorkingGroupsUpdateGroupMemberRoleData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).put<WorkingGroupsUpdateGroupMemberRoleResponses, WorkingGroupsUpdateGroupMemberRoleErrors, ThrowOnError>({
+        responseType: 'json',
         url: '/api/v1/groups/group-members/{gm_id}',
         ...options,
         headers: {

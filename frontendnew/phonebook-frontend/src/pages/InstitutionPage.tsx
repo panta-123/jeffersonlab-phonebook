@@ -21,11 +21,12 @@ const InstitutionPage: React.FC = () => {
                     query: { skip: 0, limit: 100 }
                 });
 
-                if (apiResponse.response.ok) {
+                if ('status' in apiResponse && apiResponse.status === 200) {
                     setInstitutions(apiResponse.data || []);
                 } else {
-                    setError('Failed to load institutions: ' + (apiResponse.error?.detail?.[0]?.msg || apiResponse.response.statusText));
+                    setError('Failed to load institutions: ' + (apiResponse as any).error?.detail?.[0]?.msg || 'Unknown error');
                 }
+
             } catch (err) {
                 setError('Failed to load institutions due to a network or unexpected error.');
             } finally {

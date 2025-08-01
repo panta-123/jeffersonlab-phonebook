@@ -17,14 +17,10 @@ const MembersPage: React.FC = () => {
 
             try {
                 const apiResponse = await membersListMembers();
-
-                if (apiResponse.response.ok) {
+                if ('status' in apiResponse && apiResponse.status === 200) {
                     setMembers(apiResponse.data || []);
                 } else {
-                    console.error('API call failed with status:', apiResponse.response.status, apiResponse.response.statusText);
-                    console.error('API error details:', apiResponse.error);
-                    setMembers([]);
-                    setError(`Failed to load members: ${apiResponse.response.status} - ${apiResponse.response.statusText}`);
+                    setError('Failed to load institutions: ' + (apiResponse as any).error?.detail?.[0]?.msg || 'Unknown error');
                 }
             } catch (err) {
                 console.error('Failed to fetch members (network or unexpected error):', err);
@@ -97,7 +93,11 @@ const MembersPage: React.FC = () => {
                                         <td className="py-4 px-6 text-sm text-gray-700">{member.email}</td>
                                         <td className="py-4 px-6 text-sm text-gray-700">{member.institution?.short_name || 'N/A'}</td>
                                         <td className="py-4 px-6 text-sm text-gray-700">{member.institution?.full_name || 'N/A'}</td>
-                                        <td className="py-4 px-6 text-sm text-gray-700">{member.date_joined}</td>
+                                        <td className="py-4 px-6 text-sm text-gray-700">
+                                            {member.date_joined instanceof Date
+                                                ? member.date_joined.toLocaleDateString()
+                                                : new Date(member.date_joined).toLocaleDateString()}
+                                        </td>
                                         <td className="py-4 px-6 text-sm text-gray-700">{member.institution?.country || 'N/A'}</td>
                                     </tr>
                                 ))}

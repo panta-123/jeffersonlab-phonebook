@@ -15,17 +15,25 @@ export type AuthStatus = {
     /**
      * Email
      */
-    email: string;//| null;
+    email: string;
     /**
      * Name
      */
-    name: string; //| null;
+    name: string;
 };
 
 /**
  * BoardType
  */
-export type BoardType = 'institutional' | 'executive';
+export const BoardType = {
+    INSTITUTIONAL: 'institutional',
+    EXECUTIVE: 'executive'
+} as const;
+
+/**
+ * BoardType
+ */
+export type BoardType = typeof BoardType[keyof typeof BoardType];
 
 /**
  * ErrorDetail
@@ -109,7 +117,16 @@ export type GroupResponse = {
 /**
  * GroupRole
  */
-export type GroupRole = 'member' | 'convenor' | 'co-convenor';
+export const GroupRole = {
+    MEMBER: 'member',
+    CONVENOR: 'convenor',
+    CO_CONVENOR: 'co-convenor'
+} as const;
+
+/**
+ * GroupRole
+ */
+export type GroupRole = typeof GroupRole[keyof typeof GroupRole];
 
 /**
  * GroupUpdate
@@ -133,6 +150,7 @@ export type HttpValidationError = {
 
 /**
  * InstitutionCreate
+ * Schema for creating a new Institution.
  */
 export type InstitutionCreate = {
     /**
@@ -170,19 +188,28 @@ export type InstitutionCreate = {
     /**
      * Date Added
      */
-    date_added: string;
+    date_added: Date;
     /**
      * Date Removed
      */
-    date_removed?: string | null;
+    date_removed?: Date | null;
     /**
      * Is Active
      */
     is_active?: boolean;
+    /**
+     * Entityid
+     */
+    entityid: string;
+    /**
+     * Rorid
+     */
+    rorid?: string | null;
 };
 
 /**
  * InstitutionResponse
+ * Schema for returning Institution data, includes the ID.
  */
 export type InstitutionResponse = {
     /**
@@ -220,15 +247,23 @@ export type InstitutionResponse = {
     /**
      * Date Added
      */
-    date_added: string;
+    date_added: Date;
     /**
      * Date Removed
      */
-    date_removed?: string | null;
+    date_removed?: Date | null;
     /**
      * Is Active
      */
     is_active?: boolean;
+    /**
+     * Entityid
+     */
+    entityid: string;
+    /**
+     * Rorid
+     */
+    rorid?: string | null;
     /**
      * Id
      */
@@ -237,6 +272,7 @@ export type InstitutionResponse = {
 
 /**
  * InstitutionUpdate
+ * Schema for updating an existing Institution, all fields are optional.
  */
 export type InstitutionUpdate = {
     /**
@@ -274,15 +310,19 @@ export type InstitutionUpdate = {
     /**
      * Date Added
      */
-    date_added?: string | null;
+    date_added?: Date | null;
     /**
      * Date Removed
      */
-    date_removed?: string | null;
+    date_removed?: Date | null;
     /**
      * Is Active
      */
     is_active?: boolean | null;
+    /**
+     * Rorid
+     */
+    rorid?: string | null;
 };
 
 /**
@@ -305,11 +345,11 @@ export type InstitutionalBoardMemberCreate = {
     /**
      * Start Date
      */
-    start_date: string;
+    start_date: Date;
     /**
      * End Date
      */
-    end_date?: string | null;
+    end_date?: Date | null;
     /**
      * Is Chair
      */
@@ -336,11 +376,11 @@ export type InstitutionalBoardMemberResponse = {
     /**
      * Start Date
      */
-    start_date: string;
+    start_date: Date;
     /**
      * End Date
      */
-    end_date?: string | null;
+    end_date?: Date | null;
     /**
      * Is Chair
      */
@@ -371,11 +411,11 @@ export type InstitutionalBoardMemberUpdate = {
     /**
      * Start Date
      */
-    start_date?: string | null;
+    start_date?: Date | null;
     /**
      * End Date
      */
-    end_date?: string | null;
+    end_date?: Date | null;
     /**
      * Is Chair
      */
@@ -413,11 +453,11 @@ export type MemberCreate = {
     /**
      * Date Joined
      */
-    date_joined: string;
+    date_joined: Date;
     /**
      * Date Left
      */
-    date_left?: string | null;
+    date_left?: Date | null;
     /**
      * Is Active
      */
@@ -461,11 +501,11 @@ export type MemberResponse = {
     /**
      * Date Joined
      */
-    date_joined: string;
+    date_joined: Date;
     /**
      * Date Left
      */
-    date_left?: string | null;
+    date_left?: Date | null;
     /**
      * Is Active
      */
@@ -514,11 +554,11 @@ export type MemberUpdate = {
     /**
      * Date Joined
      */
-    date_joined?: string | null;
+    date_joined?: Date | null;
     /**
      * Date Left
      */
-    date_left?: string | null;
+    date_left?: Date | null;
     /**
      * Is Active
      */
@@ -1354,5 +1394,5 @@ export type WorkingGroupsUpdateGroupMemberRoleResponses = {
 export type WorkingGroupsUpdateGroupMemberRoleResponse = WorkingGroupsUpdateGroupMemberRoleResponses[keyof WorkingGroupsUpdateGroupMemberRoleResponses];
 
 export type ClientOptions = {
-    baseUrl: `${string}://${string}` | (string & {});
+    baseURL: `${string}://${string}` | (string & {});
 };
