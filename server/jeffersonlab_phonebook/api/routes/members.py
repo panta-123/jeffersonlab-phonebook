@@ -6,9 +6,9 @@ from sqlalchemy.orm import Session  # For type hinting db session
 from jeffersonlab_phonebook.repositories.member_repository import MemberRepository
 from jeffersonlab_phonebook.schemas.members_schemas import (
     MemberCreate,
-    MemberResponse,
     MemberUpdate,
 )
+from jeffersonlab_phonebook.schemas.response_schemas import MemberResponse, MemberLiteResponse
 from jeffersonlab_phonebook.db.session import get_db
 
 # Your security dependency that provides an active Member ORM object
@@ -19,14 +19,12 @@ router = APIRouter(prefix="/members", tags=["members"])
 
 @router.get(
     "/",
-    response_model=List[MemberResponse],
+    response_model=List[MemberLiteResponse],
     summary="List all members",
     description="Retrieves a list of all members in the collaboration.",
 )
 def list_members(
     db: Session = Depends(get_db),
-    # Assign to '_' to signal that the value itself is not used, only its side-effect.
-    # This ensures the user is authenticated and active to access this endpoint.
     _=Depends(get_current_user),
 ):
     """
@@ -35,14 +33,12 @@ def list_members(
     """
     member_repo = MemberRepository(db)
     members = member_repo.get_all()
-    # FastAPI automatically handles the serialization from SQLAlchemy ORM objects
-    # into MemberResponse Pydantic models, including nested relationships.
     return members
 
 
 @router.post(
     "/",
-    response_model=MemberResponse,
+    response_model=MemberLiteResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Create a new member",
     description="Creates a new member with the provided details.",
@@ -66,14 +62,13 @@ def create_member(
 
 @router.get(
     "/{member_id}",
-    response_model=MemberResponse,
+    response_model=MemberLiteResponse,
     summary="Get a member by ID",
     description="Retrieves a single member by their unique ID.",
 )
 def get_member(
     member_id: int,
     db: Session = Depends(get_db),
-    # Ensure only authenticated and active users can view member details
     _=Depends(get_current_user),
 ):
     """
@@ -90,7 +85,7 @@ def get_member(
 
 @router.patch(
     "/{member_id}",
-    response_model=MemberResponse,
+    response_model=MemberLiteResponse,
     summary="Update an existing member",
     description="Updates an existing member's details. Only provided fields will be changed.",
 )
@@ -98,7 +93,6 @@ def update_member(
     member_id: int,
     member_in: MemberUpdate,
     db: Session = Depends(get_db),
-    # Ensure only authenticated and active users can update members
     _=Depends(get_current_user),
 ):
     """
@@ -112,8 +106,6 @@ def update_member(
     if not member:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Member not found")
 
-    # The update method should handle applying the partial updates from member_in
-    # to the existing 'member' ORM object.
     updated_member = member_repo.update(member, member_in)
     return updated_member
 
@@ -127,7 +119,6 @@ def update_member(
 def delete_member(
     member_id: int,
     db: Session = Depends(get_db),
-    # Ensure only authenticated and active users can delete members
     _=Depends(get_current_user),
 ):
     """
@@ -141,6 +132,5 @@ def delete_member(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Member not found")
 
     member_repo.delete(member_id)
-    # FastAPI automatically returns 204 No Content for functions that return None
-    # when status_code=status.HTTP_204_NO_CONTENT is specified.
     return
+

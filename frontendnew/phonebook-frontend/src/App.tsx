@@ -7,6 +7,8 @@ import DashboardPage from './pages/DashboardPage';
 import LoginPage from './pages/LoginPage';
 import MembersPage from './pages/MembersPage';
 import InstitutionPage from './pages/InstitutionPage';
+import BoardMembersPage from './pages/BoardMemebersPage';
+import GroupsPage from './pages/GroupsPage';
 
 
 function App() {
@@ -38,6 +40,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <InstitutionPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/boards"
+            element={
+              <ProtectedRoute>
+                <BoardMembersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/groups"
+            element={
+              <ProtectedRoute>
+                <GroupsPage />
               </ProtectedRoute>
             }
           />

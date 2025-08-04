@@ -134,3 +134,20 @@ class MemberRepository:
         # or handle it before calling this. This method assumes the member exists
         # or silently does nothing if not found, but it's safer to rely on the
         # router's check for 404.
+    
+    def get_member_by_institution(
+        self, institution_id: int, skip: int = 0, limit: int = 100
+    ) -> list[Member]:
+        """
+        Retrieves members for a specific institution, with optional pagination.
+        """
+        return list(
+            self.db.scalars(
+                select(Member)
+                .options(joinedload(Member.institution))  # eager-load institution
+                .where(Member.institution_id == institution_id)
+                .offset(skip)
+                .limit(limit)
+            ).all()
+        )
+

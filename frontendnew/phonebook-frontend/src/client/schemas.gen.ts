@@ -58,12 +58,80 @@ export const GroupCreateSchema = {
     properties: {
         name: {
             type: 'string',
+            maxLength: 100,
             title: 'Name'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        is_active: {
+            type: 'boolean',
+            title: 'Is Active',
+            default: true
+        },
+        date_created: {
+            type: 'string',
+            format: 'date',
+            title: 'Date Created',
+            default: '2025-08-04'
+        },
+        parent_group_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Parent Group Id'
         }
     },
     type: 'object',
     required: ['name'],
     title: 'GroupCreate'
+} as const;
+
+export const GroupLiteResponseSchema = {
+    properties: {
+        name: {
+            type: 'string',
+            maxLength: 100,
+            title: 'Name'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        is_active: {
+            type: 'boolean',
+            title: 'Is Active',
+            default: true
+        },
+        id: {
+            type: 'integer',
+            title: 'Id'
+        }
+    },
+    type: 'object',
+    required: ['name', 'id'],
+    title: 'GroupLiteResponse',
+    description: 'A simplified schema for Group, without nested relationships.'
 } as const;
 
 export const GroupMemberCreateSchema = {
@@ -76,12 +144,30 @@ export const GroupMemberCreateSchema = {
             type: 'integer',
             title: 'Member Id'
         },
-        role: {
-            '$ref': '#/components/schemas/GroupRole'
+        role_id: {
+            type: 'integer',
+            title: 'Role Id'
+        },
+        start_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Start Date'
+        },
+        end_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'End Date'
         }
     },
     type: 'object',
-    required: ['group_id', 'member_id', 'role'],
+    required: ['group_id', 'member_id', 'role_id', 'start_date'],
     title: 'GroupMemberCreate'
 } as const;
 
@@ -95,55 +181,112 @@ export const GroupMemberResponseSchema = {
             type: 'integer',
             title: 'Member Id'
         },
-        role: {
-            '$ref': '#/components/schemas/GroupRole'
-        },
-        id: {
+        role_id: {
             type: 'integer',
-            title: 'Id'
-        }
-    },
-    type: 'object',
-    required: ['group_id', 'member_id', 'role', 'id'],
-    title: 'GroupMemberResponse'
-} as const;
-
-export const GroupMemberUpdateSchema = {
-    properties: {
-        role: {
+            title: 'Role Id'
+        },
+        start_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Start Date'
+        },
+        end_date: {
             anyOf: [
                 {
-                    '$ref': '#/components/schemas/GroupRole'
+                    type: 'string',
+                    format: 'date'
                 },
                 {
                     type: 'null'
                 }
-            ]
+            ],
+            title: 'End Date'
+        },
+        id: {
+            type: 'integer',
+            title: 'Id'
+        },
+        group: {
+            '$ref': '#/components/schemas/GroupLiteResponse'
+        },
+        member: {
+            '$ref': '#/components/schemas/MemberLiteResponse'
+        },
+        role: {
+            '$ref': '#/components/schemas/RoleResponse'
         }
     },
     type: 'object',
-    title: 'GroupMemberUpdate'
+    required: ['group_id', 'member_id', 'role_id', 'start_date', 'id', 'group', 'member', 'role'],
+    title: 'GroupMemberResponse',
+    description: `Response schema for a group member entry.
+Uses lite schemas for Group and Member to break the circular reference.`
 } as const;
 
 export const GroupResponseSchema = {
     properties: {
         name: {
             type: 'string',
+            maxLength: 100,
             title: 'Name'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        is_active: {
+            type: 'boolean',
+            title: 'Is Active',
+            default: true
         },
         id: {
             type: 'integer',
             title: 'Id'
+        },
+        parent_group: {
+            anyOf: [
+                {
+                    '$ref': '#/components/schemas/GroupLiteResponse'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        },
+        subgroups: {
+            items: {
+                '$ref': '#/components/schemas/GroupLiteResponse'
+            },
+            type: 'array',
+            title: 'Subgroups',
+            default: []
+        },
+        group_memberships: {
+            items: {
+                '$ref': '#/components/schemas/GroupMemberResponse'
+            },
+            type: 'array',
+            title: 'Group Memberships',
+            default: []
         }
     },
     type: 'object',
     required: ['name', 'id'],
-    title: 'GroupResponse'
+    title: 'GroupResponse',
+    description: `Full response schema for a Group.
+Uses lite schemas for parent/subgroups to prevent recursion.`
 } as const;
 
 export const GroupRoleSchema = {
     type: 'string',
-    enum: ['member', 'convenor', 'co-convenor'],
+    enum: ['members', 'convenor', 'co-convenor'],
     title: 'GroupRole'
 } as const;
 
@@ -159,6 +302,39 @@ export const GroupUpdateSchema = {
                 }
             ],
             title: 'Name'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        is_active: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Is Active'
+        },
+        parent_group_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Parent Group Id'
         }
     },
     type: 'object',
@@ -289,11 +465,10 @@ export const InstitutionCreateSchema = {
     },
     type: 'object',
     required: ['full_name', 'short_name', 'country', 'date_added', 'entityid'],
-    title: 'InstitutionCreate',
-    description: 'Schema for creating a new Institution.'
+    title: 'InstitutionCreate'
 } as const;
 
-export const InstitutionResponseSchema = {
+export const InstitutionLiteResponseSchema = {
     properties: {
         full_name: {
             type: 'string',
@@ -407,8 +582,8 @@ export const InstitutionResponseSchema = {
     },
     type: 'object',
     required: ['full_name', 'short_name', 'country', 'date_added', 'entityid', 'id'],
-    title: 'InstitutionResponse',
-    description: 'Schema for returning Institution data, includes the ID.'
+    title: 'InstitutionLiteResponse',
+    description: 'A simplified schema for Institution, without nested relationships.'
 } as const;
 
 export const InstitutionUpdateSchema = {
@@ -550,8 +725,7 @@ export const InstitutionUpdateSchema = {
         }
     },
     type: 'object',
-    title: 'InstitutionUpdate',
-    description: 'Schema for updating an existing Institution, all fields are optional.'
+    title: 'InstitutionUpdate'
 } as const;
 
 export const InstitutionalBoardMemberCreateSchema = {
@@ -567,16 +741,9 @@ export const InstitutionalBoardMemberCreateSchema = {
         board_type: {
             '$ref': '#/components/schemas/BoardType'
         },
-        role: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Role'
+        role_id: {
+            type: 'integer',
+            title: 'Role Id'
         },
         start_date: {
             type: 'string',
@@ -594,15 +761,10 @@ export const InstitutionalBoardMemberCreateSchema = {
                 }
             ],
             title: 'End Date'
-        },
-        is_chair: {
-            type: 'boolean',
-            title: 'Is Chair',
-            default: false
         }
     },
     type: 'object',
-    required: ['member_id', 'institution_id', 'board_type', 'start_date'],
+    required: ['member_id', 'institution_id', 'board_type', 'role_id', 'start_date'],
     title: 'InstitutionalBoardMemberCreate'
 } as const;
 
@@ -619,16 +781,9 @@ export const InstitutionalBoardMemberResponseSchema = {
         board_type: {
             '$ref': '#/components/schemas/BoardType'
         },
-        role: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Role'
+        role_id: {
+            type: 'integer',
+            title: 'Role Id'
         },
         start_date: {
             type: 'string',
@@ -647,18 +802,22 @@ export const InstitutionalBoardMemberResponseSchema = {
             ],
             title: 'End Date'
         },
-        is_chair: {
-            type: 'boolean',
-            title: 'Is Chair',
-            default: false
-        },
         id: {
             type: 'integer',
             title: 'Id'
+        },
+        member: {
+            '$ref': '#/components/schemas/MemberLiteResponse'
+        },
+        institution: {
+            '$ref': '#/components/schemas/InstitutionLiteResponse'
+        },
+        role: {
+            '$ref': '#/components/schemas/RoleResponse'
         }
     },
     type: 'object',
-    required: ['member_id', 'institution_id', 'board_type', 'start_date', 'id'],
+    required: ['member_id', 'institution_id', 'board_type', 'role_id', 'start_date', 'id', 'member', 'institution', 'role'],
     title: 'InstitutionalBoardMemberResponse'
 } as const;
 
@@ -696,16 +855,16 @@ export const InstitutionalBoardMemberUpdateSchema = {
                 }
             ]
         },
-        role: {
+        role_id: {
             anyOf: [
                 {
-                    type: 'string'
+                    type: 'integer'
                 },
                 {
                     type: 'null'
                 }
             ],
-            title: 'Role'
+            title: 'Role Id'
         },
         start_date: {
             anyOf: [
@@ -730,17 +889,6 @@ export const InstitutionalBoardMemberUpdateSchema = {
                 }
             ],
             title: 'End Date'
-        },
-        is_chair: {
-            anyOf: [
-                {
-                    type: 'boolean'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Is Chair'
         }
     },
     type: 'object',
@@ -827,7 +975,7 @@ export const MemberCreateSchema = {
     title: 'MemberCreate'
 } as const;
 
-export const MemberResponseSchema = {
+export const MemberLiteResponseSchema = {
     properties: {
         first_name: {
             type: 'string',
@@ -908,7 +1056,7 @@ export const MemberResponseSchema = {
         institution: {
             anyOf: [
                 {
-                    '$ref': '#/components/schemas/InstitutionResponse'
+                    '$ref': '#/components/schemas/InstitutionLiteResponse'
                 },
                 {
                     type: 'null'
@@ -918,7 +1066,8 @@ export const MemberResponseSchema = {
     },
     type: 'object',
     required: ['first_name', 'last_name', 'email', 'institution_id', 'date_joined', 'id'],
-    title: 'MemberResponse'
+    title: 'MemberLiteResponse',
+    description: 'A simplified schema for Member, with basic institution details.'
 } as const;
 
 export const MemberUpdateSchema = {
@@ -1039,6 +1188,88 @@ export const MemberUpdateSchema = {
     },
     type: 'object',
     title: 'MemberUpdate'
+} as const;
+
+export const RoleCreateSchema = {
+    properties: {
+        name: {
+            type: 'string',
+            maxLength: 50,
+            title: 'Name'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        }
+    },
+    type: 'object',
+    required: ['name'],
+    title: 'RoleCreate'
+} as const;
+
+export const RoleResponseSchema = {
+    properties: {
+        name: {
+            type: 'string',
+            maxLength: 50,
+            title: 'Name'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        id: {
+            type: 'integer',
+            title: 'Id'
+        }
+    },
+    type: 'object',
+    required: ['name', 'id'],
+    title: 'RoleResponse'
+} as const;
+
+export const RoleUpdateSchema = {
+    properties: {
+        name: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 50
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Name'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        }
+    },
+    type: 'object',
+    title: 'RoleUpdate'
 } as const;
 
 export const ValidationErrorSchema = {

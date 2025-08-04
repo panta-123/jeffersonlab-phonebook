@@ -1,12 +1,12 @@
 // pages/MembersPage.tsx
 import React, { useEffect, useState } from 'react';
 import { membersListMembers } from '../client/sdk.gen';
-import type { MemberResponse } from '../client/types.gen';
+import type { MemberLiteResponse } from '../client/types.gen';
 import { useAuth } from '../context/AuthContext'; // Import the new hook
 
 const MembersPage: React.FC = () => {
     const { user, isAuthenticated, isLoading: authLoading } = useAuth(); // Use the hook
-    const [members, setMembers] = useState<MemberResponse[]>([]);
+    const [members, setMembers] = useState<MemberLiteResponse[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 

@@ -57,6 +57,45 @@ export type GroupCreate = {
      * Name
      */
     name: string;
+    /**
+     * Description
+     */
+    description?: string | null;
+    /**
+     * Is Active
+     */
+    is_active?: boolean;
+    /**
+     * Date Created
+     */
+    date_created?: Date;
+    /**
+     * Parent Group Id
+     */
+    parent_group_id?: number | null;
+};
+
+/**
+ * GroupLiteResponse
+ * A simplified schema for Group, without nested relationships.
+ */
+export type GroupLiteResponse = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Description
+     */
+    description?: string | null;
+    /**
+     * Is Active
+     */
+    is_active?: boolean;
+    /**
+     * Id
+     */
+    id: number;
 };
 
 /**
@@ -71,11 +110,24 @@ export type GroupMemberCreate = {
      * Member Id
      */
     member_id: number;
-    role: GroupRole;
+    /**
+     * Role Id
+     */
+    role_id: number;
+    /**
+     * Start Date
+     */
+    start_date: Date;
+    /**
+     * End Date
+     */
+    end_date?: Date | null;
 };
 
 /**
  * GroupMemberResponse
+ * Response schema for a group member entry.
+ * Uses lite schemas for Group and Member to break the circular reference.
  */
 export type GroupMemberResponse = {
     /**
@@ -86,22 +138,31 @@ export type GroupMemberResponse = {
      * Member Id
      */
     member_id: number;
-    role: GroupRole;
+    /**
+     * Role Id
+     */
+    role_id: number;
+    /**
+     * Start Date
+     */
+    start_date: Date;
+    /**
+     * End Date
+     */
+    end_date?: Date | null;
     /**
      * Id
      */
     id: number;
-};
-
-/**
- * GroupMemberUpdate
- */
-export type GroupMemberUpdate = {
-    role?: GroupRole | null;
+    group: GroupLiteResponse;
+    member: MemberLiteResponse;
+    role: RoleResponse;
 };
 
 /**
  * GroupResponse
+ * Full response schema for a Group.
+ * Uses lite schemas for parent/subgroups to prevent recursion.
  */
 export type GroupResponse = {
     /**
@@ -109,16 +170,33 @@ export type GroupResponse = {
      */
     name: string;
     /**
+     * Description
+     */
+    description?: string | null;
+    /**
+     * Is Active
+     */
+    is_active?: boolean;
+    /**
      * Id
      */
     id: number;
+    parent_group?: GroupLiteResponse | null;
+    /**
+     * Subgroups
+     */
+    subgroups?: Array<GroupLiteResponse>;
+    /**
+     * Group Memberships
+     */
+    group_memberships?: Array<GroupMemberResponse>;
 };
 
 /**
  * GroupRole
  */
 export const GroupRole = {
-    MEMBER: 'member',
+    MEMBERS: 'members',
     CONVENOR: 'convenor',
     CO_CONVENOR: 'co-convenor'
 } as const;
@@ -136,6 +214,18 @@ export type GroupUpdate = {
      * Name
      */
     name?: string | null;
+    /**
+     * Description
+     */
+    description?: string | null;
+    /**
+     * Is Active
+     */
+    is_active?: boolean | null;
+    /**
+     * Parent Group Id
+     */
+    parent_group_id?: number | null;
 };
 
 /**
@@ -150,7 +240,6 @@ export type HttpValidationError = {
 
 /**
  * InstitutionCreate
- * Schema for creating a new Institution.
  */
 export type InstitutionCreate = {
     /**
@@ -208,10 +297,10 @@ export type InstitutionCreate = {
 };
 
 /**
- * InstitutionResponse
- * Schema for returning Institution data, includes the ID.
+ * InstitutionLiteResponse
+ * A simplified schema for Institution, without nested relationships.
  */
-export type InstitutionResponse = {
+export type InstitutionLiteResponse = {
     /**
      * Full Name
      */
@@ -272,7 +361,6 @@ export type InstitutionResponse = {
 
 /**
  * InstitutionUpdate
- * Schema for updating an existing Institution, all fields are optional.
  */
 export type InstitutionUpdate = {
     /**
@@ -339,9 +427,9 @@ export type InstitutionalBoardMemberCreate = {
     institution_id: number;
     board_type: BoardType;
     /**
-     * Role
+     * Role Id
      */
-    role?: string | null;
+    role_id: number;
     /**
      * Start Date
      */
@@ -350,10 +438,6 @@ export type InstitutionalBoardMemberCreate = {
      * End Date
      */
     end_date?: Date | null;
-    /**
-     * Is Chair
-     */
-    is_chair?: boolean;
 };
 
 /**
@@ -370,9 +454,9 @@ export type InstitutionalBoardMemberResponse = {
     institution_id: number;
     board_type: BoardType;
     /**
-     * Role
+     * Role Id
      */
-    role?: string | null;
+    role_id: number;
     /**
      * Start Date
      */
@@ -382,13 +466,12 @@ export type InstitutionalBoardMemberResponse = {
      */
     end_date?: Date | null;
     /**
-     * Is Chair
-     */
-    is_chair?: boolean;
-    /**
      * Id
      */
     id: number;
+    member: MemberLiteResponse;
+    institution: InstitutionLiteResponse;
+    role: RoleResponse;
 };
 
 /**
@@ -405,9 +488,9 @@ export type InstitutionalBoardMemberUpdate = {
     institution_id?: number | null;
     board_type?: BoardType | null;
     /**
-     * Role
+     * Role Id
      */
-    role?: string | null;
+    role_id?: number | null;
     /**
      * Start Date
      */
@@ -416,10 +499,6 @@ export type InstitutionalBoardMemberUpdate = {
      * End Date
      */
     end_date?: Date | null;
-    /**
-     * Is Chair
-     */
-    is_chair?: boolean | null;
 };
 
 /**
@@ -471,9 +550,10 @@ export type MemberCreate = {
 };
 
 /**
- * MemberResponse
+ * MemberLiteResponse
+ * A simplified schema for Member, with basic institution details.
  */
-export type MemberResponse = {
+export type MemberLiteResponse = {
     /**
      * First Name
      */
@@ -520,7 +600,7 @@ export type MemberResponse = {
      * Id
      */
     id: number;
-    institution?: InstitutionResponse | null;
+    institution?: InstitutionLiteResponse | null;
 };
 
 /**
@@ -569,6 +649,52 @@ export type MemberUpdate = {
     experimental_data?: {
         [key: string]: unknown;
     } | null;
+};
+
+/**
+ * RoleCreate
+ */
+export type RoleCreate = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Description
+     */
+    description?: string | null;
+};
+
+/**
+ * RoleResponse
+ */
+export type RoleResponse = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Description
+     */
+    description?: string | null;
+    /**
+     * Id
+     */
+    id: number;
+};
+
+/**
+ * RoleUpdate
+ */
+export type RoleUpdate = {
+    /**
+     * Name
+     */
+    name?: string | null;
+    /**
+     * Description
+     */
+    description?: string | null;
 };
 
 /**
@@ -690,7 +816,7 @@ export type InstitutionsListInstitutionsResponses = {
      * Response Institutions-List Institutions
      * Successful Response
      */
-    200: Array<InstitutionResponse>;
+    200: Array<InstitutionLiteResponse>;
 };
 
 export type InstitutionsListInstitutionsResponse = InstitutionsListInstitutionsResponses[keyof InstitutionsListInstitutionsResponses];
@@ -715,7 +841,7 @@ export type InstitutionsCreateInstitutionResponses = {
     /**
      * Successful Response
      */
-    201: InstitutionResponse;
+    201: InstitutionLiteResponse;
 };
 
 export type InstitutionsCreateInstitutionResponse = InstitutionsCreateInstitutionResponses[keyof InstitutionsCreateInstitutionResponses];
@@ -775,7 +901,7 @@ export type InstitutionsGetInstitutionResponses = {
     /**
      * Successful Response
      */
-    200: InstitutionResponse;
+    200: InstitutionLiteResponse;
 };
 
 export type InstitutionsGetInstitutionResponse = InstitutionsGetInstitutionResponses[keyof InstitutionsGetInstitutionResponses];
@@ -805,10 +931,50 @@ export type InstitutionsUpdateInstitutionResponses = {
     /**
      * Successful Response
      */
-    200: InstitutionResponse;
+    200: InstitutionLiteResponse;
 };
 
 export type InstitutionsUpdateInstitutionResponse = InstitutionsUpdateInstitutionResponses[keyof InstitutionsUpdateInstitutionResponses];
+
+export type InstitutionsGetInstitutionMembersData = {
+    body?: never;
+    path: {
+        /**
+         * Institution Id
+         */
+        institution_id: number;
+    };
+    query?: {
+        /**
+         * Skip
+         */
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/institutions/{institution_id}/members';
+};
+
+export type InstitutionsGetInstitutionMembersErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type InstitutionsGetInstitutionMembersError = InstitutionsGetInstitutionMembersErrors[keyof InstitutionsGetInstitutionMembersErrors];
+
+export type InstitutionsGetInstitutionMembersResponses = {
+    /**
+     * Response Institutions-Get Institution Members
+     * Successful Response
+     */
+    200: Array<MemberLiteResponse>;
+};
+
+export type InstitutionsGetInstitutionMembersResponse = InstitutionsGetInstitutionMembersResponses[keyof InstitutionsGetInstitutionMembersResponses];
 
 export type MembersListMembersData = {
     body?: never;
@@ -822,7 +988,7 @@ export type MembersListMembersResponses = {
      * Response Members-List Members
      * Successful Response
      */
-    200: Array<MemberResponse>;
+    200: Array<MemberLiteResponse>;
 };
 
 export type MembersListMembersResponse = MembersListMembersResponses[keyof MembersListMembersResponses];
@@ -847,7 +1013,7 @@ export type MembersCreateMemberResponses = {
     /**
      * Successful Response
      */
-    201: MemberResponse;
+    201: MemberLiteResponse;
 };
 
 export type MembersCreateMemberResponse = MembersCreateMemberResponses[keyof MembersCreateMemberResponses];
@@ -907,7 +1073,7 @@ export type MembersGetMemberResponses = {
     /**
      * Successful Response
      */
-    200: MemberResponse;
+    200: MemberLiteResponse;
 };
 
 export type MembersGetMemberResponse = MembersGetMemberResponses[keyof MembersGetMemberResponses];
@@ -937,7 +1103,7 @@ export type MembersUpdateMemberResponses = {
     /**
      * Successful Response
      */
-    200: MemberResponse;
+    200: MemberLiteResponse;
 };
 
 export type MembersUpdateMemberResponse = MembersUpdateMemberResponses[keyof MembersUpdateMemberResponses];
@@ -1134,7 +1300,7 @@ export type WorkingGroupsListGroupsResponses = {
      * Response Working Groups-List Groups
      * Successful Response
      */
-    200: Array<GroupResponse>;
+    200: Array<GroupLiteResponse>;
 };
 
 export type WorkingGroupsListGroupsResponse = WorkingGroupsListGroupsResponses[keyof WorkingGroupsListGroupsResponses];
@@ -1272,9 +1438,9 @@ export type WorkingGroupsListGroupMembersOfGroupData = {
          */
         limit?: number;
         /**
-         * Role
+         * Role Name
          */
-        role?: GroupRole | null;
+        role_name?: GroupRole | null;
     };
     url: '/api/v1/groups/{group_id}/members';
 };
@@ -1306,12 +1472,7 @@ export type WorkingGroupsAddMemberToGroupData = {
          */
         group_id: number;
     };
-    query: {
-        /**
-         * Member Id
-         */
-        member_id: number;
-    };
+    query?: never;
     url: '/api/v1/groups/{group_id}/members';
 };
 
@@ -1363,35 +1524,155 @@ export type WorkingGroupsDeleteGroupMemberResponses = {
 
 export type WorkingGroupsDeleteGroupMemberResponse = WorkingGroupsDeleteGroupMemberResponses[keyof WorkingGroupsDeleteGroupMemberResponses];
 
-export type WorkingGroupsUpdateGroupMemberRoleData = {
-    body: GroupMemberUpdate;
-    path: {
+export type RolesListRolesData = {
+    body?: never;
+    path?: never;
+    query?: {
         /**
-         * Gm Id
+         * Skip
          */
-        gm_id: number;
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
     };
-    query?: never;
-    url: '/api/v1/groups/group-members/{gm_id}';
+    url: '/api/v1/roles/';
 };
 
-export type WorkingGroupsUpdateGroupMemberRoleErrors = {
+export type RolesListRolesErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type WorkingGroupsUpdateGroupMemberRoleError = WorkingGroupsUpdateGroupMemberRoleErrors[keyof WorkingGroupsUpdateGroupMemberRoleErrors];
+export type RolesListRolesError = RolesListRolesErrors[keyof RolesListRolesErrors];
 
-export type WorkingGroupsUpdateGroupMemberRoleResponses = {
+export type RolesListRolesResponses = {
+    /**
+     * Response Roles-List Roles
+     * Successful Response
+     */
+    200: Array<RoleResponse>;
+};
+
+export type RolesListRolesResponse = RolesListRolesResponses[keyof RolesListRolesResponses];
+
+export type RolesCreateRoleData = {
+    body: RoleCreate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/roles/';
+};
+
+export type RolesCreateRoleErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RolesCreateRoleError = RolesCreateRoleErrors[keyof RolesCreateRoleErrors];
+
+export type RolesCreateRoleResponses = {
     /**
      * Successful Response
      */
-    200: GroupMemberResponse;
+    201: RoleResponse;
 };
 
-export type WorkingGroupsUpdateGroupMemberRoleResponse = WorkingGroupsUpdateGroupMemberRoleResponses[keyof WorkingGroupsUpdateGroupMemberRoleResponses];
+export type RolesCreateRoleResponse = RolesCreateRoleResponses[keyof RolesCreateRoleResponses];
+
+export type RolesDeleteRoleData = {
+    body?: never;
+    path: {
+        /**
+         * Role Id
+         */
+        role_id: number;
+    };
+    query?: never;
+    url: '/api/v1/roles/{role_id}';
+};
+
+export type RolesDeleteRoleErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RolesDeleteRoleError = RolesDeleteRoleErrors[keyof RolesDeleteRoleErrors];
+
+export type RolesDeleteRoleResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type RolesDeleteRoleResponse = RolesDeleteRoleResponses[keyof RolesDeleteRoleResponses];
+
+export type RolesGetRoleData = {
+    body?: never;
+    path: {
+        /**
+         * Role Id
+         */
+        role_id: number;
+    };
+    query?: never;
+    url: '/api/v1/roles/{role_id}';
+};
+
+export type RolesGetRoleErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RolesGetRoleError = RolesGetRoleErrors[keyof RolesGetRoleErrors];
+
+export type RolesGetRoleResponses = {
+    /**
+     * Successful Response
+     */
+    200: RoleResponse;
+};
+
+export type RolesGetRoleResponse = RolesGetRoleResponses[keyof RolesGetRoleResponses];
+
+export type RolesUpdateRoleData = {
+    body: RoleUpdate;
+    path: {
+        /**
+         * Role Id
+         */
+        role_id: number;
+    };
+    query?: never;
+    url: '/api/v1/roles/{role_id}';
+};
+
+export type RolesUpdateRoleErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RolesUpdateRoleError = RolesUpdateRoleErrors[keyof RolesUpdateRoleErrors];
+
+export type RolesUpdateRoleResponses = {
+    /**
+     * Successful Response
+     */
+    200: RoleResponse;
+};
+
+export type RolesUpdateRoleResponse = RolesUpdateRoleResponses[keyof RolesUpdateRoleResponses];
 
 export type ClientOptions = {
     baseURL: `${string}://${string}` | (string & {});

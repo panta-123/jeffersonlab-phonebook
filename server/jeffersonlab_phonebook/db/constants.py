@@ -5,6 +5,6 @@ class BoardType(enum.Enum):
     EXECUTIVE = "executive"
 
 class GroupRole(enum.Enum):
-    MEMBER = "member"
+    MEMBER = "members"
     CONVENOR = "convenor"
     CO_CONVENOR = "co-convenor"

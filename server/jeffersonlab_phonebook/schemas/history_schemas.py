@@ -20,9 +20,3 @@ class MemberInstitutionHistoryUpdate(MemberInstitutionHistoryBase):
     institution_id: Optional[int] = None
     start_date: Optional[date] = None
     end_date: Optional[date] = None
-    
-# Response Schema
-class MemberInstitutionHistoryResponse(MemberInstitutionHistoryBase):
-    id: int
-    
-    model_config = ConfigDict(from_attributes=True)

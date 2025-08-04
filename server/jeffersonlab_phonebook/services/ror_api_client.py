@@ -1,7 +1,6 @@
-
 import requests
-from typing import  Any
-from jeffersonlab_phonebook.config.settings import settings # Assuming settings is correctly configured
+from typing import Any
+from jeffersonlab_phonebook.config.settings import settings
 
 # --- Define Custom Exceptions (Recommended) ---
 class RorApiClientError(Exception):
@@ -28,58 +27,85 @@ def call_ror_api(rorid: str) -> dict[str, Any]:
     Calls the ROR API and returns relevant data.
     Raises RorApiNetworkError or RorApiDataError on failure.
     """
+    headers = {
+        "Client-Id": settings.ROR_CLIENT_ID
+    }
+
     try:
-        response = requests.get(f"{settings.ROR_API_BASE_URL}{rorid}")
-        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+        # In a real-world scenario, you would use this commented-out line.
+        response = requests.get(f"{settings.ROR_API_BASE_URL}/{rorid}", headers=headers)
+        response.raise_for_status()
         data = response.json()
+        
+        # --- Correct Data Extraction Logic ---
+        full_name = None
+        short_name = None
 
-        # You might add more robust data validation here
-        # For example, if 'name' is absolutely required:
-        if not data.get("name"):
-            raise RorApiDataError(
-                f"ROR API response for {rorid} missing 'name' field.",
-                original_data=data
-            )
+        # Find the full_name from the names list
+        for name_obj in data.get("names", []):
+            if "ror_display" in name_obj.get("types", []):
+                full_name = name_obj.get("value")
+                break
+        
+        # Fallback to 'label' if 'ror_display' is not found
+        if full_name is None:
+            for name_obj in data.get("names", []):
+                if "label" in name_obj.get("types", []):
+                    full_name = name_obj.get("value")
+                    break
+        
+        # Find the short_name (acronym or alias)
+        for name_obj in data.get("names", []):
+            if "acronym" in name_obj.get("types", []):
+                short_name = name_obj.get("value")
+                break
+        if short_name is None: # Fallback to alias if no acronym
+            for name_obj in data.get("names", []):
+                if "alias" in name_obj.get("types", []):
+                    short_name = name_obj.get("value")
+                    break
 
-        return {
-            "full_name": data.get("name"),
-            "short_name": data.get("acronyms", [None])[0],
-            "country": data.get("country", {}).get("country_name"),
-            "region": data.get("country", {}).get("country_code"),
-            "latitude": data.get("addresses", [{}])[0].get("lat"),
-            "longitude": data.get("addresses", [{}])[0].get("lng"),
-            "city": data.get("addresses", [{}])[0].get("city"),
-            "address": data.get("addresses", [{}])[0].get("line"),
+        first_location_details = data.get("locations", [{}])[0].get("geonames_details", {})
+
+        latitude = first_location_details.get("lat")
+        longitude = first_location_details.get("lng")
+        city = first_location_details.get("name")
+        address_line = first_location_details.get("name") # The provided data does not have an address line, so we can use city name as a proxy
+        country = first_location_details.get("country_name")
+        region = first_location_details.get("country_subdivision_name")
+
+        ret =  {
+            "full_name": full_name,
+            "short_name": short_name,
+            "country": country,
+            "region": region,
+            "latitude": latitude,
+            "longitude": longitude,
+            "city": city,
+            "address": address_line,
         }
+        return ret
+        
     except requests.exceptions.HTTPError as e:
-        # Specific handling for HTTP errors (4xx, 5xx)
         raise RorApiNetworkError(
             f"ROR API returned an HTTP error for ROR ID {rorid}: {e.response.status_code} - {e.response.text}",
             status_code=e.response.status_code,
             original_exception=e
-        ) from e # 'from e' chains the exceptions, preserving the original traceback
+        ) from e
     except requests.exceptions.ConnectionError as e:
-        # Specific handling for network connection issues
         raise RorApiNetworkError(
             f"Failed to connect to ROR API for ROR ID {rorid}: {e}",
             original_exception=e
         ) from e
     except requests.exceptions.RequestException as e:
-        # Catch-all for other requests library errors
         raise RorApiNetworkError(
             f"An unknown network error occurred with ROR API for ROR ID {rorid}: {e}",
             original_exception=e
         ) from e
-    except ValueError as e: # Raised by response.json() if content is not valid JSON
-        raise RorApiDataError(
-            f"ROR API response for {rorid} was not valid JSON: {e}",
-            original_exception=e,
-            original_data=response.text # Capture the raw text for debugging
-        ) from e
     except Exception as e:
-        # Catch-all for any other unexpected errors during data processing
+        original_content = data if 'data' in locals() else None
         raise RorApiDataError(
             f"An unexpected error occurred processing ROR API response for {rorid}: {e}",
             original_exception=e,
-            original_data=data # If data was parsed before the error
+            original_data=original_content
         ) from e
