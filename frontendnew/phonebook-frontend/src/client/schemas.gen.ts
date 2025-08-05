@@ -31,6 +31,227 @@ export const BoardTypeSchema = {
     title: 'BoardType'
 } as const;
 
+export const ConferenceCreateSchema = {
+    properties: {
+        name: {
+            type: 'string',
+            title: 'Name'
+        },
+        location: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Location'
+        },
+        start_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Start Date'
+        },
+        end_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'End Date'
+        },
+        url: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Url'
+        }
+    },
+    type: 'object',
+    required: ['name', 'start_date'],
+    title: 'ConferenceCreate'
+} as const;
+
+export const ConferenceLiteResponseSchema = {
+    properties: {
+        name: {
+            type: 'string',
+            title: 'Name'
+        },
+        location: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Location'
+        },
+        start_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Start Date'
+        },
+        end_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'End Date'
+        },
+        url: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Url'
+        },
+        id: {
+            type: 'integer',
+            title: 'Id'
+        }
+    },
+    type: 'object',
+    required: ['name', 'start_date', 'id'],
+    title: 'ConferenceLiteResponse',
+    description: 'A simplified schema for Conference, without nested relationships.'
+} as const;
+
+export const ConferenceResponseSchema = {
+    properties: {
+        name: {
+            type: 'string',
+            title: 'Name'
+        },
+        location: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Location'
+        },
+        start_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Start Date'
+        },
+        end_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'End Date'
+        },
+        url: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Url'
+        },
+        id: {
+            type: 'integer',
+            title: 'Id'
+        },
+        talks: {
+            items: {
+                '$ref': '#/components/schemas/TalkResponse'
+            },
+            type: 'array',
+            title: 'Talks',
+            default: []
+        }
+    },
+    type: 'object',
+    required: ['name', 'start_date', 'id'],
+    title: 'ConferenceResponse'
+} as const;
+
+export const ConferenceUpdateSchema = {
+    properties: {
+        name: {
+            type: 'string',
+            title: 'Name'
+        },
+        location: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Location'
+        },
+        start_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Start Date'
+        },
+        end_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'End Date'
+        },
+        url: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Url'
+        }
+    },
+    type: 'object',
+    required: ['name', 'start_date'],
+    title: 'ConferenceUpdate'
+} as const;
+
 export const ErrorDetailSchema = {
     properties: {
         detail: {
@@ -81,7 +302,7 @@ export const GroupCreateSchema = {
             type: 'string',
             format: 'date',
             title: 'Date Created',
-            default: '2025-08-04'
+            default: '2025-08-05'
         },
         parent_group_id: {
             anyOf: [
@@ -1190,6 +1411,33 @@ export const MemberUpdateSchema = {
     title: 'MemberUpdate'
 } as const;
 
+export const PaginatedMemberResponseSchema = {
+    properties: {
+        items: {
+            items: {
+                '$ref': '#/components/schemas/MemberLiteResponse'
+            },
+            type: 'array',
+            title: 'Items'
+        },
+        total: {
+            type: 'integer',
+            title: 'Total'
+        },
+        skip: {
+            type: 'integer',
+            title: 'Skip'
+        },
+        limit: {
+            type: 'integer',
+            title: 'Limit'
+        }
+    },
+    type: 'object',
+    required: ['items', 'total', 'skip', 'limit'],
+    title: 'PaginatedMemberResponse'
+} as const;
+
 export const RoleCreateSchema = {
     properties: {
         name: {
@@ -1270,6 +1518,374 @@ export const RoleUpdateSchema = {
     },
     type: 'object',
     title: 'RoleUpdate'
+} as const;
+
+export const TalkAssignmentCreateSchema = {
+    properties: {
+        talk_id: {
+            type: 'integer',
+            title: 'Talk Id'
+        },
+        member_id: {
+            type: 'integer',
+            title: 'Member Id'
+        },
+        role_id: {
+            type: 'integer',
+            title: 'Role Id'
+        },
+        assigned_by_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Assigned By Id'
+        }
+    },
+    type: 'object',
+    required: ['talk_id', 'member_id', 'role_id'],
+    title: 'TalkAssignmentCreate'
+} as const;
+
+export const TalkAssignmentResponseSchema = {
+    properties: {
+        talk_id: {
+            type: 'integer',
+            title: 'Talk Id'
+        },
+        member_id: {
+            type: 'integer',
+            title: 'Member Id'
+        },
+        role_id: {
+            type: 'integer',
+            title: 'Role Id'
+        },
+        assigned_by_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Assigned By Id'
+        },
+        id: {
+            type: 'integer',
+            title: 'Id'
+        },
+        member: {
+            '$ref': '#/components/schemas/MemberLiteResponse'
+        },
+        role: {
+            '$ref': '#/components/schemas/RoleResponse'
+        },
+        assigned_by_member: {
+            anyOf: [
+                {
+                    '$ref': '#/components/schemas/MemberLiteResponse'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        }
+    },
+    type: 'object',
+    required: ['talk_id', 'member_id', 'role_id', 'id', 'member', 'role'],
+    title: 'TalkAssignmentResponse'
+} as const;
+
+export const TalkAssignmentUpdateSchema = {
+    properties: {
+        talk_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Talk Id'
+        },
+        member_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Member Id'
+        },
+        role_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Role Id'
+        },
+        assigned_by_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Assigned By Id'
+        }
+    },
+    type: 'object',
+    title: 'TalkAssignmentUpdate'
+} as const;
+
+export const TalkCreateSchema = {
+    properties: {
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        start_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Start Date'
+        },
+        end_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'End Date'
+        },
+        docdb_id: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Docdb Id'
+        },
+        talk_link: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Talk Link'
+        },
+        conference_id: {
+            type: 'integer',
+            title: 'Conference Id'
+        }
+    },
+    type: 'object',
+    required: ['title', 'start_date', 'conference_id'],
+    title: 'TalkCreate'
+} as const;
+
+export const TalkLiteResponseSchema = {
+    properties: {
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        start_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Start Date'
+        },
+        end_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'End Date'
+        },
+        docdb_id: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Docdb Id'
+        },
+        talk_link: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Talk Link'
+        },
+        id: {
+            type: 'integer',
+            title: 'Id'
+        }
+    },
+    type: 'object',
+    required: ['title', 'start_date', 'id'],
+    title: 'TalkLiteResponse'
+} as const;
+
+export const TalkResponseSchema = {
+    properties: {
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        start_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Start Date'
+        },
+        end_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'End Date'
+        },
+        docdb_id: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Docdb Id'
+        },
+        talk_link: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Talk Link'
+        },
+        id: {
+            type: 'integer',
+            title: 'Id'
+        },
+        assignments: {
+            items: {
+                '$ref': '#/components/schemas/TalkAssignmentResponse'
+            },
+            type: 'array',
+            title: 'Assignments',
+            default: []
+        }
+    },
+    type: 'object',
+    required: ['title', 'start_date', 'id'],
+    title: 'TalkResponse'
+} as const;
+
+export const TalkUpdateSchema = {
+    properties: {
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        start_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Start Date'
+        },
+        end_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'End Date'
+        },
+        docdb_id: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Docdb Id'
+        },
+        talk_link: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Talk Link'
+        },
+        conference_id: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Conference Id'
+        }
+    },
+    type: 'object',
+    required: ['title', 'start_date'],
+    title: 'TalkUpdate'
 } as const;
 
 export const ValidationErrorSchema = {

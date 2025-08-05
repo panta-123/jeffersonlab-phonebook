@@ -1,69 +1,75 @@
-// pages/MembersPage.tsx
 import React, { useEffect, useState } from 'react';
 import { membersListMembers } from '../client/sdk.gen';
-import type { MemberLiteResponse } from '../client/types.gen';
-import { useAuth } from '../context/AuthContext'; // Import the new hook
+import type { PaginatedMemberResponse, MemberLiteResponse } from '../client/types.gen';
+import { useAuth } from '../context/AuthContext';
 
 const MembersPage: React.FC = () => {
-    const { user, isAuthenticated, isLoading: authLoading } = useAuth(); // Use the hook
-    const [members, setMembers] = useState<MemberLiteResponse[]>([]);
+    const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+    const [paginatedResponse, setPaginatedResponse] = useState<PaginatedMemberResponse | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Pagination states
+    const [currentPage, setCurrentPage] = useState<number>(0);
+    const limit = 10;
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             setError(null);
-
             try {
-                const apiResponse = await membersListMembers();
-                if ('status' in apiResponse && apiResponse.status === 200) {
-                    setMembers(apiResponse.data || []);
+                const apiResponse = await membersListMembers({ query: { skip: currentPage * limit, limit } });
+                if (apiResponse.status === 200 && apiResponse.data) {
+                    setPaginatedResponse(apiResponse.data);
                 } else {
-                    setError('Failed to load institutions: ' + (apiResponse as any).error?.detail?.[0]?.msg || 'Unknown error');
+                    const errorMessage = (apiResponse as any).error?.detail?.[0]?.msg || (apiResponse as any).error?.message || 'Unknown API error';
+                    setError('Failed to load members: ' + errorMessage);
+                    setPaginatedResponse(null);
                 }
             } catch (err) {
-                console.error('Failed to fetch members (network or unexpected error):', err);
-                setMembers([]);
+                console.error('Failed to fetch members:', err);
                 setError('Failed to load members due to a network or unexpected error. Please try again later.');
+                setPaginatedResponse(null);
             } finally {
                 setLoading(false);
             }
         };
 
-        // Only fetch data if the user is authenticated and the auth status is no longer loading
         if (!authLoading && isAuthenticated) {
             fetchData();
         }
-    }, [isAuthenticated, authLoading]); // Dependency on auth state
+    }, [isAuthenticated, authLoading, currentPage, limit]);
 
-    // Render loading state for API data fetch OR auth status check
-    if (loading || authLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-100">
-                <p className="text-lg text-gray-700">Loading members data...</p>
-            </div>
-        );
+    const handleNextPage = () => {
+        if (paginatedResponse && (currentPage + 1) * limit < paginatedResponse.total) {
+            setCurrentPage(prevPage => prevPage + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(prevPage => prevPage - 1);
+        }
+    };
+
+    if (loading) {
+        return <div className="p-6 text-center text-gray-700">Loading members...</div>;
     }
 
-    // Render error state
     if (error) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-100 flex flex-col items-center p-4">
-                <div className="flex-grow flex items-center justify-center w-full">
-                    <p className="text-xl text-red-700 font-semibold">{error}</p>
-                </div>
-            </div>
-        );
+        return <div className="text-center text-red-500 p-6">{error}</div>;
     }
 
-    // Render main content
+    const members: MemberLiteResponse[] = paginatedResponse?.items || [];
+    const totalMembers = paginatedResponse?.total || 0;
+    const canGoNext = (currentPage + 1) * limit < totalMembers;
+    const canGoPrevious = currentPage > 0;
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col items-center p-4">
             <div className="container mx-auto mt-8 p-6 bg-white rounded-lg shadow-xl">
                 <h1 className="text-4xl font-extrabold text-gray-800 mb-8 text-center">Collaboration Members</h1>
 
-                {/* Display user info if available from the context */}
                 {user && (
                     <p className="text-lg text-gray-600 mb-8 text-center">
                         Logged in as: <span className="font-semibold text-purple-600">{user.name || user.email}</span>
@@ -103,6 +109,26 @@ const MembersPage: React.FC = () => {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                )}
+                {/* Pagination Controls */}
+                {totalMembers > limit && (
+                    <div className="flex justify-between items-center mt-6">
+                        <button
+                            onClick={handlePreviousPage}
+                            disabled={!canGoPrevious}
+                            className={`px-4 py-2 rounded-md font-semibold ${canGoPrevious ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-300 text-gray-600 cursor-not-allowed'}`}
+                        >
+                            Previous
+                        </button>
+                        <span className="text-gray-700">Page {currentPage + 1} of {Math.ceil(totalMembers / limit)}</span>
+                        <button
+                            onClick={handleNextPage}
+                            disabled={!canGoNext}
+                            className={`px-4 py-2 rounded-md font-semibold ${canGoNext ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-300 text-gray-600 cursor-not-allowed'}`}
+                        >
+                            Next
+                        </button>
                     </div>
                 )}
             </div>

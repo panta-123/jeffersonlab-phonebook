@@ -36,6 +36,123 @@ export const BoardType = {
 export type BoardType = typeof BoardType[keyof typeof BoardType];
 
 /**
+ * ConferenceCreate
+ */
+export type ConferenceCreate = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Location
+     */
+    location?: string | null;
+    /**
+     * Start Date
+     */
+    start_date: Date;
+    /**
+     * End Date
+     */
+    end_date?: Date | null;
+    /**
+     * Url
+     */
+    url?: string | null;
+};
+
+/**
+ * ConferenceLiteResponse
+ * A simplified schema for Conference, without nested relationships.
+ */
+export type ConferenceLiteResponse = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Location
+     */
+    location?: string | null;
+    /**
+     * Start Date
+     */
+    start_date: Date;
+    /**
+     * End Date
+     */
+    end_date?: Date | null;
+    /**
+     * Url
+     */
+    url?: string | null;
+    /**
+     * Id
+     */
+    id: number;
+};
+
+/**
+ * ConferenceResponse
+ */
+export type ConferenceResponse = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Location
+     */
+    location?: string | null;
+    /**
+     * Start Date
+     */
+    start_date: Date;
+    /**
+     * End Date
+     */
+    end_date?: Date | null;
+    /**
+     * Url
+     */
+    url?: string | null;
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Talks
+     */
+    talks?: Array<TalkResponse>;
+};
+
+/**
+ * ConferenceUpdate
+ */
+export type ConferenceUpdate = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Location
+     */
+    location?: string | null;
+    /**
+     * Start Date
+     */
+    start_date: Date;
+    /**
+     * End Date
+     */
+    end_date?: Date | null;
+    /**
+     * Url
+     */
+    url?: string | null;
+};
+
+/**
  * ErrorDetail
  */
 export type ErrorDetail = {
@@ -652,6 +769,28 @@ export type MemberUpdate = {
 };
 
 /**
+ * PaginatedMemberResponse
+ */
+export type PaginatedMemberResponse = {
+    /**
+     * Items
+     */
+    items: Array<MemberLiteResponse>;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Skip
+     */
+    skip: number;
+    /**
+     * Limit
+     */
+    limit: number;
+};
+
+/**
  * RoleCreate
  */
 export type RoleCreate = {
@@ -695,6 +834,203 @@ export type RoleUpdate = {
      * Description
      */
     description?: string | null;
+};
+
+/**
+ * TalkAssignmentCreate
+ */
+export type TalkAssignmentCreate = {
+    /**
+     * Talk Id
+     */
+    talk_id: number;
+    /**
+     * Member Id
+     */
+    member_id: number;
+    /**
+     * Role Id
+     */
+    role_id: number;
+    /**
+     * Assigned By Id
+     */
+    assigned_by_id?: number | null;
+};
+
+/**
+ * TalkAssignmentResponse
+ */
+export type TalkAssignmentResponse = {
+    /**
+     * Talk Id
+     */
+    talk_id: number;
+    /**
+     * Member Id
+     */
+    member_id: number;
+    /**
+     * Role Id
+     */
+    role_id: number;
+    /**
+     * Assigned By Id
+     */
+    assigned_by_id?: number | null;
+    /**
+     * Id
+     */
+    id: number;
+    member: MemberLiteResponse;
+    role: RoleResponse;
+    assigned_by_member?: MemberLiteResponse | null;
+};
+
+/**
+ * TalkAssignmentUpdate
+ */
+export type TalkAssignmentUpdate = {
+    /**
+     * Talk Id
+     */
+    talk_id?: number | null;
+    /**
+     * Member Id
+     */
+    member_id?: number | null;
+    /**
+     * Role Id
+     */
+    role_id?: number | null;
+    /**
+     * Assigned By Id
+     */
+    assigned_by_id?: number | null;
+};
+
+/**
+ * TalkCreate
+ */
+export type TalkCreate = {
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Start Date
+     */
+    start_date: Date;
+    /**
+     * End Date
+     */
+    end_date?: Date | null;
+    /**
+     * Docdb Id
+     */
+    docdb_id?: string | null;
+    /**
+     * Talk Link
+     */
+    talk_link?: string | null;
+    /**
+     * Conference Id
+     */
+    conference_id: number;
+};
+
+/**
+ * TalkLiteResponse
+ */
+export type TalkLiteResponse = {
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Start Date
+     */
+    start_date: Date;
+    /**
+     * End Date
+     */
+    end_date?: Date | null;
+    /**
+     * Docdb Id
+     */
+    docdb_id?: string | null;
+    /**
+     * Talk Link
+     */
+    talk_link?: string | null;
+    /**
+     * Id
+     */
+    id: number;
+};
+
+/**
+ * TalkResponse
+ */
+export type TalkResponse = {
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Start Date
+     */
+    start_date: Date;
+    /**
+     * End Date
+     */
+    end_date?: Date | null;
+    /**
+     * Docdb Id
+     */
+    docdb_id?: string | null;
+    /**
+     * Talk Link
+     */
+    talk_link?: string | null;
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Assignments
+     */
+    assignments?: Array<TalkAssignmentResponse>;
+};
+
+/**
+ * TalkUpdate
+ */
+export type TalkUpdate = {
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Start Date
+     */
+    start_date: Date;
+    /**
+     * End Date
+     */
+    end_date?: Date | null;
+    /**
+     * Docdb Id
+     */
+    docdb_id?: string | null;
+    /**
+     * Talk Link
+     */
+    talk_link?: string | null;
+    /**
+     * Conference Id
+     */
+    conference_id?: number | null;
 };
 
 /**
@@ -979,16 +1315,33 @@ export type InstitutionsGetInstitutionMembersResponse = InstitutionsGetInstituti
 export type MembersListMembersData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Skip
+         */
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
     url: '/api/v1/members/';
 };
 
+export type MembersListMembersErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type MembersListMembersError = MembersListMembersErrors[keyof MembersListMembersErrors];
+
 export type MembersListMembersResponses = {
     /**
-     * Response Members-List Members
      * Successful Response
      */
-    200: Array<MemberLiteResponse>;
+    200: PaginatedMemberResponse;
 };
 
 export type MembersListMembersResponse = MembersListMembersResponses[keyof MembersListMembersResponses];
@@ -1673,6 +2026,461 @@ export type RolesUpdateRoleResponses = {
 };
 
 export type RolesUpdateRoleResponse = RolesUpdateRoleResponses[keyof RolesUpdateRoleResponses];
+
+export type ConferencesListConferencesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Skip
+         */
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/conferences/';
+};
+
+export type ConferencesListConferencesErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ConferencesListConferencesError = ConferencesListConferencesErrors[keyof ConferencesListConferencesErrors];
+
+export type ConferencesListConferencesResponses = {
+    /**
+     * Response Conferences-List Conferences
+     * Successful Response
+     */
+    200: Array<ConferenceLiteResponse>;
+};
+
+export type ConferencesListConferencesResponse = ConferencesListConferencesResponses[keyof ConferencesListConferencesResponses];
+
+export type ConferencesCreateConferenceData = {
+    body: ConferenceCreate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/conferences/';
+};
+
+export type ConferencesCreateConferenceErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ConferencesCreateConferenceError = ConferencesCreateConferenceErrors[keyof ConferencesCreateConferenceErrors];
+
+export type ConferencesCreateConferenceResponses = {
+    /**
+     * Successful Response
+     */
+    201: ConferenceResponse;
+};
+
+export type ConferencesCreateConferenceResponse = ConferencesCreateConferenceResponses[keyof ConferencesCreateConferenceResponses];
+
+export type ConferencesDeleteConferenceData = {
+    body?: never;
+    path: {
+        /**
+         * Conference Id
+         */
+        conference_id: number;
+    };
+    query?: never;
+    url: '/api/v1/conferences/{conference_id}';
+};
+
+export type ConferencesDeleteConferenceErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ConferencesDeleteConferenceError = ConferencesDeleteConferenceErrors[keyof ConferencesDeleteConferenceErrors];
+
+export type ConferencesDeleteConferenceResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type ConferencesDeleteConferenceResponse = ConferencesDeleteConferenceResponses[keyof ConferencesDeleteConferenceResponses];
+
+export type ConferencesGetConferenceData = {
+    body?: never;
+    path: {
+        /**
+         * Conference Id
+         */
+        conference_id: number;
+    };
+    query?: {
+        /**
+         * Include Talks
+         */
+        include_talks?: boolean;
+    };
+    url: '/api/v1/conferences/{conference_id}';
+};
+
+export type ConferencesGetConferenceErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ConferencesGetConferenceError = ConferencesGetConferenceErrors[keyof ConferencesGetConferenceErrors];
+
+export type ConferencesGetConferenceResponses = {
+    /**
+     * Successful Response
+     */
+    200: ConferenceResponse;
+};
+
+export type ConferencesGetConferenceResponse = ConferencesGetConferenceResponses[keyof ConferencesGetConferenceResponses];
+
+export type ConferencesUpdateConferenceData = {
+    body: ConferenceUpdate;
+    path: {
+        /**
+         * Conference Id
+         */
+        conference_id: number;
+    };
+    query?: never;
+    url: '/api/v1/conferences/{conference_id}';
+};
+
+export type ConferencesUpdateConferenceErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ConferencesUpdateConferenceError = ConferencesUpdateConferenceErrors[keyof ConferencesUpdateConferenceErrors];
+
+export type ConferencesUpdateConferenceResponses = {
+    /**
+     * Successful Response
+     */
+    200: ConferenceResponse;
+};
+
+export type ConferencesUpdateConferenceResponse = ConferencesUpdateConferenceResponses[keyof ConferencesUpdateConferenceResponses];
+
+export type TalksListTalksData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Skip
+         */
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/talks/';
+};
+
+export type TalksListTalksErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TalksListTalksError = TalksListTalksErrors[keyof TalksListTalksErrors];
+
+export type TalksListTalksResponses = {
+    /**
+     * Response Talks-List Talks
+     * Successful Response
+     */
+    200: Array<TalkLiteResponse>;
+};
+
+export type TalksListTalksResponse = TalksListTalksResponses[keyof TalksListTalksResponses];
+
+export type TalksCreateTalkData = {
+    body: TalkCreate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/talks/';
+};
+
+export type TalksCreateTalkErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TalksCreateTalkError = TalksCreateTalkErrors[keyof TalksCreateTalkErrors];
+
+export type TalksCreateTalkResponses = {
+    /**
+     * Successful Response
+     */
+    201: TalkResponse;
+};
+
+export type TalksCreateTalkResponse = TalksCreateTalkResponses[keyof TalksCreateTalkResponses];
+
+export type TalksDeleteTalkData = {
+    body?: never;
+    path: {
+        /**
+         * Talk Id
+         */
+        talk_id: number;
+    };
+    query?: never;
+    url: '/api/v1/talks/{talk_id}';
+};
+
+export type TalksDeleteTalkErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TalksDeleteTalkError = TalksDeleteTalkErrors[keyof TalksDeleteTalkErrors];
+
+export type TalksDeleteTalkResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type TalksDeleteTalkResponse = TalksDeleteTalkResponses[keyof TalksDeleteTalkResponses];
+
+export type TalksGetTalkData = {
+    body?: never;
+    path: {
+        /**
+         * Talk Id
+         */
+        talk_id: number;
+    };
+    query?: never;
+    url: '/api/v1/talks/{talk_id}';
+};
+
+export type TalksGetTalkErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TalksGetTalkError = TalksGetTalkErrors[keyof TalksGetTalkErrors];
+
+export type TalksGetTalkResponses = {
+    /**
+     * Successful Response
+     */
+    200: TalkResponse;
+};
+
+export type TalksGetTalkResponse = TalksGetTalkResponses[keyof TalksGetTalkResponses];
+
+export type TalksUpdateTalkData = {
+    body: TalkUpdate;
+    path: {
+        /**
+         * Talk Id
+         */
+        talk_id: number;
+    };
+    query?: never;
+    url: '/api/v1/talks/{talk_id}';
+};
+
+export type TalksUpdateTalkErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TalksUpdateTalkError = TalksUpdateTalkErrors[keyof TalksUpdateTalkErrors];
+
+export type TalksUpdateTalkResponses = {
+    /**
+     * Successful Response
+     */
+    200: TalkResponse;
+};
+
+export type TalksUpdateTalkResponse = TalksUpdateTalkResponses[keyof TalksUpdateTalkResponses];
+
+export type TalkAssignmentsListTalkAssignmentsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Skip
+         */
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/talk-assignments/';
+};
+
+export type TalkAssignmentsListTalkAssignmentsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TalkAssignmentsListTalkAssignmentsError = TalkAssignmentsListTalkAssignmentsErrors[keyof TalkAssignmentsListTalkAssignmentsErrors];
+
+export type TalkAssignmentsListTalkAssignmentsResponses = {
+    /**
+     * Response Talk Assignments-List Talk Assignments
+     * Successful Response
+     */
+    200: Array<TalkAssignmentResponse>;
+};
+
+export type TalkAssignmentsListTalkAssignmentsResponse = TalkAssignmentsListTalkAssignmentsResponses[keyof TalkAssignmentsListTalkAssignmentsResponses];
+
+export type TalkAssignmentsCreateTalkAssignmentData = {
+    body: TalkAssignmentCreate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/talk-assignments/';
+};
+
+export type TalkAssignmentsCreateTalkAssignmentErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TalkAssignmentsCreateTalkAssignmentError = TalkAssignmentsCreateTalkAssignmentErrors[keyof TalkAssignmentsCreateTalkAssignmentErrors];
+
+export type TalkAssignmentsCreateTalkAssignmentResponses = {
+    /**
+     * Successful Response
+     */
+    201: TalkAssignmentResponse;
+};
+
+export type TalkAssignmentsCreateTalkAssignmentResponse = TalkAssignmentsCreateTalkAssignmentResponses[keyof TalkAssignmentsCreateTalkAssignmentResponses];
+
+export type TalkAssignmentsDeleteTalkAssignmentData = {
+    body?: never;
+    path: {
+        /**
+         * Assignment Id
+         */
+        assignment_id: number;
+    };
+    query?: never;
+    url: '/api/v1/talk-assignments/{assignment_id}';
+};
+
+export type TalkAssignmentsDeleteTalkAssignmentErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TalkAssignmentsDeleteTalkAssignmentError = TalkAssignmentsDeleteTalkAssignmentErrors[keyof TalkAssignmentsDeleteTalkAssignmentErrors];
+
+export type TalkAssignmentsDeleteTalkAssignmentResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type TalkAssignmentsDeleteTalkAssignmentResponse = TalkAssignmentsDeleteTalkAssignmentResponses[keyof TalkAssignmentsDeleteTalkAssignmentResponses];
+
+export type TalkAssignmentsGetTalkAssignmentData = {
+    body?: never;
+    path: {
+        /**
+         * Assignment Id
+         */
+        assignment_id: number;
+    };
+    query?: never;
+    url: '/api/v1/talk-assignments/{assignment_id}';
+};
+
+export type TalkAssignmentsGetTalkAssignmentErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TalkAssignmentsGetTalkAssignmentError = TalkAssignmentsGetTalkAssignmentErrors[keyof TalkAssignmentsGetTalkAssignmentErrors];
+
+export type TalkAssignmentsGetTalkAssignmentResponses = {
+    /**
+     * Successful Response
+     */
+    200: TalkAssignmentResponse;
+};
+
+export type TalkAssignmentsGetTalkAssignmentResponse = TalkAssignmentsGetTalkAssignmentResponses[keyof TalkAssignmentsGetTalkAssignmentResponses];
+
+export type TalkAssignmentsUpdateTalkAssignmentData = {
+    body: TalkAssignmentUpdate;
+    path: {
+        /**
+         * Assignment Id
+         */
+        assignment_id: number;
+    };
+    query?: never;
+    url: '/api/v1/talk-assignments/{assignment_id}';
+};
+
+export type TalkAssignmentsUpdateTalkAssignmentErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TalkAssignmentsUpdateTalkAssignmentError = TalkAssignmentsUpdateTalkAssignmentErrors[keyof TalkAssignmentsUpdateTalkAssignmentErrors];
+
+export type TalkAssignmentsUpdateTalkAssignmentResponses = {
+    /**
+     * Successful Response
+     */
+    200: TalkAssignmentResponse;
+};
+
+export type TalkAssignmentsUpdateTalkAssignmentResponse = TalkAssignmentsUpdateTalkAssignmentResponses[keyof TalkAssignmentsUpdateTalkAssignmentResponses];
 
 export type ClientOptions = {
     baseURL: `${string}://${string}` | (string & {});

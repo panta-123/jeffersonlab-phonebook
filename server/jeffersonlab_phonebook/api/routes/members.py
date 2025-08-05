@@ -8,7 +8,7 @@ from jeffersonlab_phonebook.schemas.members_schemas import (
     MemberCreate,
     MemberUpdate,
 )
-from jeffersonlab_phonebook.schemas.response_schemas import MemberResponse, MemberLiteResponse
+from jeffersonlab_phonebook.schemas.response_schemas import PaginatedMemberResponse, MemberLiteResponse
 from jeffersonlab_phonebook.db.session import get_db
 
 # Your security dependency that provides an active Member ORM object
@@ -19,22 +19,60 @@ router = APIRouter(prefix="/members", tags=["members"])
 
 @router.get(
     "/",
-    response_model=List[MemberLiteResponse],
+    response_model=PaginatedMemberResponse,
     summary="List all members",
-    description="Retrieves a list of all members in the collaboration.",
+    description="Retrieves a paginated list of all members in the collaboration.",
 )
 def list_members(
     db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
     _=Depends(get_current_user),
 ):
     """
-    Retrieves a list of all members from the database.
-    The user must be authenticated and their account must be active.
+    Retrieves a paginated list of all members from the database.
     """
     member_repo = MemberRepository(db)
-    members = member_repo.get_all()
-    return members
+    
+    total_members = member_repo.count_all()
+    
+    members = member_repo.get_all(skip=skip, limit=limit)
+    
+    # 3. Return the comprehensive paginated response
+    return {
+        "items": members,
+        "total": total_members,
+        "skip": skip,
+        "limit": limit
+    }
+"""
+@router.get(
+    "/search",
+    response_model=List[MemberLiteResponse],
+    summary="Search for members",
+    description="Searches for members by name or email.",
+)
+def search_members(
+    query: str,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
 
+    member_repo = MemberRepository(db)
+    
+    # Your repository method would need to be updated to handle the search logic
+    # For example, using SQLAlchemy's `ilike` for case-insensitive search:
+    # `members = self.db.query(Member).filter(or_(
+    #     Member.first_name.ilike(f'%{query}%'),
+    #     Member.last_name.ilike(f'%{query}%'),
+    #     Member.email.ilike(f'%{query}%'),
+    # )).limit(limit).all()`
+    
+    #members = member_repo.search(query=query, limit=limit)
+    
+    return #members
+"""
 
 @router.post(
     "/",

@@ -221,7 +221,7 @@ class Talk(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String, nullable=False)
-    dodb_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    docdb_id: Mapped[str | None] = mapped_column(String, nullable=True)
     talk_link: Mapped[str | None] = mapped_column(String, nullable=True)
 
     start_date: Mapped[date] = mapped_column(Date, nullable=False)

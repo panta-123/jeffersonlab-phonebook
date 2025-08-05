@@ -9,7 +9,7 @@ from pydantic import ConfigDict, Field, BaseModel
 from .institutions_schemas import InstitutionBase
 from .group_schemas import GroupBase, GroupMemberBase
 from .board_schemas import InstitutionalBoardMemberBase
-from .talk_schemas import TalkBase, ConferenceBase, TalkAssignmentBase
+from .conference_schemas import TalkBase, ConferenceBase, TalkAssignmentBase
 from .members_schemas import MemberBase
 from .role_schemas import RoleResponse
 from .history_schemas import MemberInstitutionHistoryBase
@@ -35,8 +35,18 @@ class MemberLiteResponse(MemberBase):
     institution: Optional["InstitutionLiteResponse"] = None
     model_config = ConfigDict(from_attributes=True)
 
+class PaginatedMemberResponse(BaseModel):
+    items: List[MemberLiteResponse]
+    total: int
+    skip: int
+    limit: int
+
 class ConferenceLiteResponse(ConferenceBase):
     """A simplified schema for Conference, without nested relationships."""
+    id: int
+    model_config = ConfigDict(from_attributes=True)
+
+class TalkLiteResponse(TalkBase):
     id: int
     model_config = ConfigDict(from_attributes=True)
 
@@ -85,23 +95,25 @@ class InstitutionalBoardMemberResponse(InstitutionalBoardMemberBase):
 
 class TalkAssignmentResponse(TalkAssignmentBase):
     id: int
-    # Use Lite schemas where appropriate to prevent deep nesting
-    talk: "TalkResponse"
     member: "MemberLiteResponse"
     role: "RoleResponse"
     assigned_by_member: Optional["MemberLiteResponse"] = None
-    model_config = ConfigDict(from_attributes=True)
+
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
+
 
 class TalkResponse(TalkBase):
     id: int
-    conference: Optional["ConferenceLiteResponse"] = None
     assignments: List["TalkAssignmentResponse"] = []
-    model_config = ConfigDict(from_attributes=True)
+
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
+
 
 class ConferenceResponse(ConferenceBase):
     id: int
     talks: List["TalkResponse"] = []
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
+
     
 class MemberResponse(MemberBase):
     """Full response schema for a Member."""

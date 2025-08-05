@@ -9,6 +9,7 @@ import MembersPage from './pages/MembersPage';
 import InstitutionPage from './pages/InstitutionPage';
 import BoardMembersPage from './pages/BoardMemebersPage';
 import GroupsPage from './pages/GroupsPage';
+import ConferencePage from './pages/ConferencePage';
 
 
 function App() {
@@ -56,6 +57,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <GroupsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/conferences"
+            element={
+              <ProtectedRoute>
+                <ConferencePage />
               </ProtectedRoute>
             }
           />

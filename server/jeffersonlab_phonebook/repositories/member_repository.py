@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Any, Optional
 
-from sqlalchemy import select, and_
+from sqlalchemy import select, func
 from sqlalchemy.orm import Session, joinedload
 
 from jeffersonlab_phonebook.db.models import Member
@@ -86,16 +86,23 @@ class MemberRepository:
         return self.create(member_create_data) # Use the generic create method
 
 
-    def get_all(self) -> list[Member]:
+    def get_all(self, skip: int = 0, limit: int = 100) -> list[Member]:
         """
         Retrieves all members from the database.
         Includes eager loading of the 'institution' relationship for nested serialization.
         """
         return list(
             self.db.scalars(
-                select(Member).options(joinedload(Member.institution))
+                select(Member).offset(skip).limit(limit).options(joinedload(Member.institution))
             ).all()
         )
+    
+    def count_all(self) -> int:
+        """
+        Returns the total number of members in the database.
+        """
+        count = self.db.scalar(select(func.count()).select_from(Member))
+        return count or 0
 
     def update(self, db_member: Member, member_in: MemberUpdate) -> Member:
         """
