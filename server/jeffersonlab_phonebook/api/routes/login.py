@@ -66,6 +66,7 @@ async def auth(
     member = member_repo.get_by_sub(userinfo["sub"])
 
     if not member:
+        # look into IDP ID ('idp')
         institution = institution_repo.get_by_name(
             userinfo.get("idp_name", "Default Institution")
         )

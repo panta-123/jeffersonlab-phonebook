@@ -50,7 +50,7 @@ const LoginPage: React.FC = () => {
                         transition-colors duration-300 ease-in-out
                     "
                 >
-                    Login with JLab SSO
+                    Login with CILOGON
                 </button>
             </div>
         </div>

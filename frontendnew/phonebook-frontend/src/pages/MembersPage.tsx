@@ -86,9 +86,11 @@ const MembersPage: React.FC = () => {
                                 <tr className="bg-gray-100 border-b border-gray-200">
                                     <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                                     <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ORCID</th>
                                     <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institution (Short)</th>
                                     <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institution (Full)</th>
                                     <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Joined</th>
+                                    <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">isActive</th>
                                     <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
                                 </tr>
                             </thead>
@@ -97,6 +99,7 @@ const MembersPage: React.FC = () => {
                                     <tr key={member.id} className="border-b border-gray-100 hover:bg-gray-50">
                                         <td className="py-4 px-6 text-sm font-medium text-gray-900">{member.first_name} {member.last_name}</td>
                                         <td className="py-4 px-6 text-sm text-gray-700">{member.email}</td>
+                                        <td className="py-4 px-6 text-sm text-gray-700">{member.orcid}</td>
                                         <td className="py-4 px-6 text-sm text-gray-700">{member.institution?.short_name || 'N/A'}</td>
                                         <td className="py-4 px-6 text-sm text-gray-700">{member.institution?.full_name || 'N/A'}</td>
                                         <td className="py-4 px-6 text-sm text-gray-700">
@@ -104,6 +107,7 @@ const MembersPage: React.FC = () => {
                                                 ? member.date_joined.toLocaleDateString()
                                                 : new Date(member.date_joined).toLocaleDateString()}
                                         </td>
+                                        <td className="py-4 px-6 text-sm text-gray-700">{member.is_active}</td>
                                         <td className="py-4 px-6 text-sm text-gray-700">{member.institution?.country || 'N/A'}</td>
                                     </tr>
                                 ))}

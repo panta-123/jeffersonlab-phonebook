@@ -19,7 +19,13 @@ def create_talk_assignment(
     db: Session = Depends(get_db)
 ):
     repository = TalkAssignmentRepository(db)
-    return repository.create(talk_assignment)
+    try:
+        return repository.create(talk_assignment)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(e)
+        )
 
 
 @router.get("/", response_model=List[TalkAssignmentResponse])

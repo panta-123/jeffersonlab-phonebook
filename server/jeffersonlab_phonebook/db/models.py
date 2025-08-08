@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Any
 
-from sqlalchemy import Date, Float, ForeignKey, String, Enum, Text
+from sqlalchemy import Date, Float, ForeignKey, String, Enum, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -88,6 +88,11 @@ class Member(Base):
     date_left: Mapped[date | None] = mapped_column(Date, nullable=True)
 
     is_active: Mapped[bool] = mapped_column(default=True)
+
+    # add memeber extra info like (memebership Category), predefine category
+    # https://moller-docdb.physics.sunysb.edu/DocDB/0011/001158/002/BylawsMOLLERV6.pdf
+    # Senior, Postdoc, and Graduate Student, Undergraduate student (let IB add that)
+    # 'isElligibleForAuthorship' (let IB add that)
 
     experimental_data: Mapped[dict[str, Any] | None] = mapped_column(
         JSONB, nullable=True
@@ -258,4 +263,7 @@ class TalkAssignment(Base):
     role: Mapped["Role"] = relationship(back_populates="talk_assignments")
     assigned_by_member: Mapped["Member"] = relationship(
         back_populates="talk_assignments_given", foreign_keys=[assigned_by_id]
+    )
+    __table_args__ = (
+        UniqueConstraint('talk_id', 'member_id', 'role_id', name='uq_talk_member_role'),
     )

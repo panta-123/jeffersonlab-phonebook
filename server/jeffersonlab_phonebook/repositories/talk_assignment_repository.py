@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+
 
 from jeffersonlab_phonebook.db.models import TalkAssignment
 from jeffersonlab_phonebook.schemas.conference_schemas import (
@@ -23,12 +25,16 @@ class TalkAssignmentRepository:
         return self.db.scalars(query).all()
 
     def create(self, assignment_in: TalkAssignmentCreate) -> TalkAssignment:
-        data = assignment_in.model_dump()
-        data["assignment_date"] = date.today()
-        assignment = TalkAssignment(**data)
-        self.db.add(assignment)
-        self.db.commit()
-        self.db.refresh(assignment)
+        try:
+            data = assignment_in.model_dump()
+            data["assignment_date"] = date.today()
+            assignment = TalkAssignment(**data)
+            self.db.add(assignment)
+            self.db.commit()
+            self.db.refresh(assignment)
+        except IntegrityError as e:
+            self.db.rollback()
+            raise ValueError("This talk-member-role combination already exists.") from e
         return assignment
 
     def update(self, db_assignment: TalkAssignment, assignment_in: TalkAssignmentUpdate) -> TalkAssignment:

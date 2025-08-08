@@ -159,7 +159,7 @@ const ConferencePage: React.FC = () => {
             const response = await conferencesCreateConference({
                 body: newConf
             });
-            if ('status' in response && response.status === 200) {
+            if ('status' in response && (response.status === 200 || response.status === 201)) {
                 setAddingNewConference(false);
                 await fetchConferences();
             } else {
@@ -189,7 +189,7 @@ const ConferencePage: React.FC = () => {
             const response = await talksCreateTalk({
                 body: newTalk
             });
-            if ('status' in response && response.status === 200) {
+            if ('status' in response && (response.status === 200 || response.status === 201)) {
                 setAddingNewTalk(false);
                 await fetchConferenceDetails(selectedConference.id);
             } else {
@@ -219,7 +219,7 @@ const ConferencePage: React.FC = () => {
             const response = await talkAssignmentsCreateTalkAssignment({
                 body: assignment
             });
-            if ('status' in response && response.status === 200) {
+            if ('status' in response && (response.status === 200 || response.status === 201)) {
                 setAssigningTalkId(null);
                 await fetchConferenceDetails(selectedConference.id);
             } else {
@@ -337,6 +337,20 @@ const ConferencePage: React.FC = () => {
                                         <a href={talk.talk_link} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-500 hover:underline">
                                             Talk Link
                                         </a>
+                                    )}
+                                    {talk.assignments?.length ? (
+                                        <div className="mt-2">
+                                            <h4 className="text-sm font-medium text-gray-700">Assigned Members:</h4>
+                                            <ul className="list-disc list-inside ml-4 text-sm text-gray-600">
+                                                {talk.assignments.map(assignment => (
+                                                    <li key={assignment.id}>
+                                                        {assignment.member?.first_name} {assignment.member?.last_name} ({assignment.role?.name})
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ) : (
+                                        <p className="text-xs text-gray-400 mt-2">No members assigned.</p>
                                     )}
                                     {user?.isadmin && (
                                         <button
