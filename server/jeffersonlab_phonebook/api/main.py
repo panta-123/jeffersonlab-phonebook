@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from jeffersonlab_phonebook.api.routes import institutions, login, members, board_members, groups, utils, role, talk_conference, talk_assignment
+from jeffersonlab_phonebook.api.routes import publication
 
 api_router = APIRouter()
 api_router.include_router(login.router)
@@ -13,3 +14,4 @@ api_router.include_router(role.router)
 api_router.include_router(talk_conference.conference_router)
 api_router.include_router(talk_conference.router)
 api_router.include_router(talk_assignment.router)
+api_router.include_router(publication.router)
